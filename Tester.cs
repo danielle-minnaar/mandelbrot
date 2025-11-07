@@ -1,7 +1,4 @@
-using System.Drawing.Imaging;
 using System.Numerics;
-using Mandelbrot.Generators;
-using Mandelbrot.Model;
 
 namespace Mandelbrot;
 
