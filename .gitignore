@@ -1,0 +1,17 @@
+# Ignore Visual Studio and VsCode temporary files and settings.
+# As well as build results.
+
+
+.vscode/
+.vs/
+
+
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
