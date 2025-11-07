@@ -1,4 +1,6 @@
 using System.Drawing;
+using Mandelbrot.ExtensionMethods;
+using Mandelbrot.Model;
 
 namespace Mandelbrot.Generators;
 
@@ -10,7 +12,7 @@ public class ColorPicker
     private List<Color> colors = new List<Color>();
     private static string pallettesFolder = "Storage/Pallettes/";
 
-    private List<double> _escapeSpeedThresholds = new List<double>();
+    private List<double?> _escapeSpeedThresholds = new List<double?>();
 
     /// <summary>
     ///     Initializes a new instance of the
@@ -40,51 +42,81 @@ public class ColorPicker
         }
     }
 
-    public Bitmap GetColorFromEscapeSpeed(double[,] escapeSpeeds, bool isTiming = false)
+    public BrotImage GetColorFromIterations(IterationData iterationData)
     {
         var startTime = DateTime.Now;
-        
-        SetEscapeSpeedThresholds(escapeSpeeds);
-        
-        var image = new Bitmap(escapeSpeeds.GetLength(0), escapeSpeeds.GetLength(1));
 
-        for (int x = 0; x < escapeSpeeds.GetLength(0); x++)
+        var iterations = iterationData.CalculationResults;
+        var spaceParam = iterationData.SpaceParam;
+
+        var image = new Bitmap(spaceParam.XSize, spaceParam.YSize);
+
+        for (int x = 0; x < spaceParam.XSize; x++)
         {
-            for (int y = 0; y < escapeSpeeds.GetLength(1); y++)
+            for (int y = 0; y < spaceParam.YSize; y++)
             {
-                var color = GetColorFromEscapeSpeed(escapeSpeeds[x, y]);
+                var color = GetColorFromIterations(iterations[x, y].Iterations,
+                    iterationData.MinIterations,
+                    iterationData.MaxIterations);
                 image.SetPixel(x, y, color);
             }
         }
 
-        if (isTiming) Console.WriteLine($"The coloring took this long: {DateTime.Now - startTime}");
-        
-        return image;
+        var colorTime = DateTime.Now - startTime;
+
+        return iterationData.ToBrotImage(image, colorTime);
     }
 
-    private void SetEscapeSpeedThresholds(double[,] escapeSpeeds)
+    public BrotImage GetColorFromEscapeSpeed(IterationData iterationData)
+    {
+        var startTime = DateTime.Now;
+
+        var escapeSpeeds = iterationData.CalculationResults;
+        
+        SetEscapeSpeedThresholds(escapeSpeeds);
+
+        var spaceParam = iterationData.SpaceParam;
+        var image = new Bitmap(spaceParam.XSize, spaceParam.YSize);
+
+        for (int x = 0; x < spaceParam.XSize; x++)
+        {
+            for (int y = 0; y < spaceParam.YSize; y++)
+            {
+                var color = GetColorFromEscapeSpeed(escapeSpeeds[x, y].EscapeSpeed);
+                image.SetPixel(x, y, color);
+            }
+        }
+
+        var colorTime = DateTime.Now - startTime;
+
+        return iterationData.ToBrotImage(image, colorTime);
+    }
+
+    private void SetEscapeSpeedThresholds(CalcResult[,] escapeSpeeds)
     {
         var numThresholds = colors.Count();
 
-        var queryable = escapeSpeeds.Cast<double>();
-        var count = queryable.Where(i => i != 0).Count();
+        var queryable = escapeSpeeds.Cast<CalcResult>();
+        var count = queryable.Where(calc => calc.Iterations != 0).Count();
         var skipSize = count / numThresholds;
 
-        var max = queryable.Max();
-        queryable = queryable
-            .Where(i => i != 0)
-            .Order()
+        var max = queryable.Max(calc => calc.EscapeSpeed);
+        var result = queryable
+            .Where(calc => calc.Iterations != 0)
+            .OrderBy(calc => calc.EscapeSpeed)
             .Where((item, index) => index % skipSize == 0)
             .SkipLast(1)
+            .Select(calc => calc.EscapeSpeed)
+            .ToList()
             ;
-        var result = queryable.ToList();
+
         result.Add(max);
         _escapeSpeedThresholds = result;
     }
 
-    private Color GetColorFromEscapeSpeed(double escapeSpeed)
+    private Color GetColorFromEscapeSpeed(double? escapeSpeed)
     {
-        if (escapeSpeed == 0)
+        if (escapeSpeed == 0 || escapeSpeed is null)
         {
             return Color.Black;
         }
@@ -113,9 +145,9 @@ public class ColorPicker
         return InterpolateColors(color1, color2, fraction);
     }
     
-    private static Color InterpolateColors(Color color1, Color color2, double fraction)
+    private static Color InterpolateColors(Color color1, Color color2, double? fraction)
     {
-        if (fraction < 0 || fraction > 1)
+        if (fraction is null || fraction < 0 || fraction > 1)
         {
             throw new ArgumentException($"This is not correct: {fraction}");
         }
@@ -148,11 +180,8 @@ public class ColorPicker
     /// <returns>
     ///     The <c>Color</c> that matches the number of iterations.
     /// </returns>
-    public Color GetColorFromIterations(Int128 iterations,
-                                        Int128 minIterations,
-                                        Int128 maxIterations)
+    public Color GetColorFromIterations(int iterations, int minIterations, int maxIterations)
     {
-
         if (iterations == 0)
         {
             return Color.Black;

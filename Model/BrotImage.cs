@@ -5,40 +5,20 @@ namespace Mandelbrot.Model;
 /// <summary>
 ///     Holds a Mandelbrot image alonside metadata.
 /// </summary>
-public class BrotImage
+public record BrotImage
 {
     /// <summary>
     ///     Color image of the fractal.
     /// </summary>
     public required Bitmap Image;
-    
-    /// <summary>
-    ///     Contains the bound of the complex space of the image.
-    /// </summary>
-    public required ComplexSpaceParameters complexSpaceParameters;
-    
-    /// <summary>
-    ///     Of all the points not in the fractal this is the minimum number of iterations.
-    /// </summary>
-    public required int MinIterations;
-    
-    /// <summary>
-    ///     Of all the points not in the fractal this is the maximum number of iterations.
-    /// </summary>
-    public required int MaxIterations;
-    
-    /// <summary>
-    ///     The maximum number of iterations to which a point will be calculated.
-    /// </summary>
-    public int? MaxCalculatedIterations;
 
     /// <summary>
-    ///     Contains the raw data for the iterations.
+    ///     The time it took to convert from raw data to a color image.
     /// </summary>
-    public int[,]? Iterations;
+    public required TimeSpan ColorTime;
 
     /// <summary>
-    ///     Contains the raw data for the escape speeds.
+    ///     Holds raw iteration data as well as iteration meta data.
     /// </summary>
-    public double[,]? EscapeSpeeds;
+    public required IterationData IterationData;
 }

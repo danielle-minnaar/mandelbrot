@@ -1,25 +1,29 @@
+using System.Drawing;
+using System.Numerics;
 using Mandelbrot.Model;
 
 namespace Mandelbrot.ExtensionMethods;
 
 public static class DataConversions
 {
-    public static IterationData AddIterationMetaData(this IterationData iterationData)
+    public static CalcParam ToCalcParam(this LoopParam loopParam, Complex inputPoint)
     {
-        var queryable = iterationData.Iterations.Cast<int>();
+        return new CalcParam
+        {
+            InputPoint = inputPoint,
+            Bound = loopParam.Bound,
+            MaxIterations = loopParam.MaxCalculatedIterations,
+            isContinuous = loopParam.IsContinuous
+        };
+    }
 
-        iterationData.MaxIterations = queryable
-            .Where(i => i != 0)
-            .Max();
-
-        iterationData.MinIterations = queryable
-            .Where(i => i != 0)
-            .Min();
-
-        iterationData.PointsInFractal = queryable
-            .Where(i => i == 0)
-            .Count();
-
-        return iterationData;
+    public static BrotImage ToBrotImage(this IterationData iterationData, Bitmap image, TimeSpan colorTime)
+    {
+        return new BrotImage
+        {
+            Image = image,
+            ColorTime = colorTime,
+            IterationData = iterationData
+        };
     }
 }
