@@ -1,4 +1,5 @@
 using Mandelbrot.Model;
+using Mandelbrot.Model.Parameters;
 
 namespace Mandelbrot.Helpers;
 
