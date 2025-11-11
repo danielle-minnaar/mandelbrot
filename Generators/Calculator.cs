@@ -91,7 +91,7 @@ public class Calculator
             Parallel.For(0, spaceParam.YSize, y =>
             {
                 var calcParam = loopParam.ToCalcParam(inputSpace[x, y]);
-                var result = CalculateIteration(calcParam, 0, new Complex(0, 0));
+                var result = CalculateIteration(calcParam);
                 iterResult[x, y] = result.Iterations;
                 if (result.EscapeSpeed != null)
                 {
@@ -107,35 +107,38 @@ public class Calculator
         return (null, iterResult);
     }
     
-    private CalcResult CalculateIteration(CalcParam calcParam, int currentIteration, Complex z)
+    private CalcResult CalculateIteration(CalcParam calcParam)
     {
-        if (z.Magnitude > calcParam.Bound)
+        var z = new Complex(0, 0);
+
+        for (int i = 0; i < calcParam.MaxIterations; i++)
         {
-            var result = new CalcResult { Iterations = currentIteration };
-            
-            if (calcParam.isContinuous)
+            if (z.Magnitude > calcParam.Bound)
             {
-                // This math is explained here:
-                // https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
-                var logZn = Math.Log(z.Magnitude);
-                var nu = Math.Log(logZn / Math.Log(calcParam.Bound)) / Math.Log(2);
-                result.EscapeSpeed = currentIteration + 1d - nu;
+                if (calcParam.isContinuous)
+                {
+                    // This math is explained here:
+                    // https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
+                    var logZn = Math.Log(z.Magnitude);
+                    var nu = Math.Log(logZn / Math.Log(calcParam.Bound)) / Math.Log(2);
+                    return new CalcResult
+                    {
+                        Iterations = i,
+                        EscapeSpeed = i + 1d - nu
+                    };
+                }
+
+                return new CalcResult { Iterations = i };
             }
             
-            return result;
+            z = z * z + calcParam.InputPoint;
         }
 
-        if (currentIteration >= calcParam.MaxIterations)
+        return new CalcResult
         {
-            var result = new CalcResult { Iterations = 0 };
-            result.EscapeSpeed = calcParam.isContinuous ? 0d : null;
-
-            return result;
-        }
-
-        z = z * z + calcParam.InputPoint;
-        currentIteration++;
-        return CalculateIteration(calcParam, currentIteration, z);
+            Iterations = 0,
+            EscapeSpeed = calcParam.isContinuous ? 0d : null
+        };
     }
 
     private static Complex[,] GenerateInputSpace(SpaceParam spaceParam)

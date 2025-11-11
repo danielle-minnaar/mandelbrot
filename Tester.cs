@@ -33,9 +33,9 @@ public static class Tester
         var sequenceParam = new SequenceParam
         {
             Center = new Complex(-0.21756183674433, -1.11441769882846),
-            FinalSize = 0.001,
+            FinalSize = 0.00001,
             StartingSize = 10,
-            ZoomFactor = 0.3,
+            ZoomFactor = 0.95,
             XResolution = 1920,
             YResolution = 1080
         };
