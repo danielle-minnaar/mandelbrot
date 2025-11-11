@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Mandelbrot.Model;
+namespace Mandelbrot.Model.Parameters;
 
 public record CalcParam
 {

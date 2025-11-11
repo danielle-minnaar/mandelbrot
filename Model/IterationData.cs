@@ -1,3 +1,5 @@
+using Mandelbrot.Model.Parameters;
+
 namespace Mandelbrot.Model;
 
 /// <summary>

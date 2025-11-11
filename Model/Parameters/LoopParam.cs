@@ -1,4 +1,4 @@
-namespace Mandelbrot.Model;
+namespace Mandelbrot.Model.Parameters;
 
 /// <summary>
 ///     A dto that contains the meta data necessary to calculate the mandelbrot iterations.
@@ -8,7 +8,7 @@ public record LoopParam
     /// <summary>
     ///     Contains the boundaries of the complex space of the image.
     /// </summary>
-    public required ComplexSpaceParameters SpaceParam;
+    public required SpaceParam SpaceParam;
 
     /// <summary>
     ///     The boundary value beyond which a point is decided to lie outside the fractal.
