@@ -1,6 +1,7 @@
 using Mandelbrot.Model;
 using Mandelbrot.Model.Parameters;
 using Mandelbrot.Generators;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Mandelbrot.Helpers;
 
@@ -164,6 +165,7 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         }
     }
 
+    [MemberNotNull(nameof(_loopParam))]
     private void CheckIfBuilderHasbeenInitialized(string currentMethodName)
     {
         if (_loopParam is null)
@@ -173,6 +175,7 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         }
     }
 
+    [MemberNotNull(nameof(_calculationResults))]
     private void CheckIfCalculationHasBeenPerformed(string currentMethodName)
     {
         if (_calculationResults is null)
