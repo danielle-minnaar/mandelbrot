@@ -2,8 +2,21 @@ using Mandelbrot.Model;
 
 namespace Mandelbrot.ExtensionMethods;
 
+/// <summary>
+///     Class that holds all of the custom ToMyString methods.
+/// </summary>
 public static class StringConversions
 {
+    /// <summary>
+    ///     Turn the meta data of the <see cref="BrotImage"/> class
+    ///     into human readable text.
+    /// </summary>
+    /// <param name="brotImage">
+    ///     The supplied image.
+    /// </param>
+    /// <returns>
+    ///     A <c>string</c> containing the meta data.
+    /// </returns>
     public static string ToMyString(this BrotImage brotImage)
     {
         var spaceParam = brotImage.IterationData.SpaceParam;
