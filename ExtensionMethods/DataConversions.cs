@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using Mandelbrot.Model;
+using Mandelbrot.Model.Parameters;
 
 namespace Mandelbrot.ExtensionMethods;
 
