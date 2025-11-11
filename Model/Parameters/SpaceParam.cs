@@ -31,12 +31,27 @@ public class SpaceParam
     ///  The number of points along the real component.
     /// </summary>
     public int XSize;
-    
+
     /// <summary>
     ///     The number of points along the imaginary component.
     /// </summary>
     public int YSize;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SpaceParam"/> class.
+    /// </summary>
+    /// <param name="center">
+    ///     The center of the image.
+    /// </param>
+    /// <param name="xScale">
+    ///     The scale of the image along the real component.
+    /// </param>
+    /// <param name="xResolution">
+    ///     The number of points in the image along the real component.
+    /// </param>
+    /// <param name="yResolution">
+    ///     The number of points in the image along the imaginary component.
+    /// </param>
     public SpaceParam(Complex center, double xScale, int xResolution, int yResolution)
     {
         XMin = center.Real - xScale / 2;

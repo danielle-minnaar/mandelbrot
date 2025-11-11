@@ -1,7 +1,7 @@
 namespace Mandelbrot.Model.Parameters;
 
 /// <summary>
-///     A dto that contains the meta data necessary to calculate the mandelbrot iterations.
+///     A dto that contains the meta data necessary to calculate the mandelbrot for an image.
 /// </summary>
 public record LoopParam
 {
