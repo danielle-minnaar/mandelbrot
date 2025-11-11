@@ -7,13 +7,15 @@ using Mandelbrot.Model.Parameters;
 namespace Mandelbrot.Generators;
 
 /// <summary>
-///     Class that calculates how quicky a point in the complex plane escapes a bound value.
+///     Class that calculates how quicky a point in
+///     the complex plane escapes a bound value.
 /// </summary>
 public class Calculator
 {
     private IterationData? _prevCalc;
     private int _iterationFactor;
     private int _continuousBound;
+    private int _initialIter;
 
     /// <summary>
     ///     Initializes a new instance of the
@@ -26,15 +28,33 @@ public class Calculator
     /// <param name="continuousBound">
     ///     The boundary selected if the image is continous.
     /// </param>
+    /// <param name="initialIter">
+    ///     The max iterations for the first generated image.
+    /// </param>
     /// <remarks>
     ///     Higher values give greater image clarity, but slows down processing.
     /// </remarks>
-    public Calculator(int iterationFactor = 200, int continuousBound = 2000)
+    public Calculator(
+        int iterationFactor = 200,
+        int continuousBound = 2000,
+        int initialIter = 200)
     {
         _iterationFactor = iterationFactor;
         _continuousBound = continuousBound;
+        _initialIter = initialIter;
     }
 
+    /// <summary>
+    ///     Generates the iteration data based on the supplied parameters.
+    /// </summary>
+    /// <param name="spaceParam">
+    ///     The parameters that determine the scope of the data.
+    /// </param>
+    /// <param name="isContinuous">
+    ///     If true also calculate the escape speed.
+    ///     Slows down the calculation.
+    /// </param>
+    /// <returns></returns>
     public IterationData GenerateIterationData(SpaceParam spaceParam, bool isContinuous)
     {
         var loopParam = new LoopParam
@@ -42,7 +62,7 @@ public class Calculator
             SpaceParam = spaceParam,
             Bound = isContinuous ? _continuousBound : 2,
             MaxCalculatedIterations = _prevCalc is null
-                ? _iterationFactor
+                ? _initialIter
                 : _prevCalc.MinIterations * _iterationFactor,
             IsContinuous = isContinuous
         };

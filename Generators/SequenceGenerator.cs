@@ -3,8 +3,15 @@ using Mandelbrot.Model.Parameters;
 
 namespace Mandelbrot.Generators;
 
+/// <summary>
+///     A generator that can be used to make zoom-sequences of images.
+/// </summary>
 public class SequenceGenerator
 {
+    /// <summary>
+    ///     If true at least one another image can be generated
+    ///     before the end of the sequence is reached.
+    /// </summary>
     public bool HasNextImage => currentImageSize > _sequenceParam.FinalSize;
 
     private readonly SequenceParam _sequenceParam;
@@ -13,9 +20,19 @@ public class SequenceGenerator
 
     private SpaceParam currentImageParam;
     private double currentImageSize;
-    private BrotImage? currentImage;
 
-    public SequenceGenerator(SequenceParam sequenceParam, Func<SpaceParam, BrotImage> generatingFunction)
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SequenceGenerator"/> class.
+    /// </summary>
+    /// <param name="sequenceParam">
+    ///     The parameters that determine the zoom and image parameters.
+    /// </param>
+    /// <param name="generatingFunction">
+    ///     The function that is used to generate the images.
+    /// </param>
+    public SequenceGenerator(
+        SequenceParam sequenceParam,
+        Func<SpaceParam, BrotImage> generatingFunction)
     {
         _sequenceParam = sequenceParam;
         _generatingFunction = generatingFunction;
@@ -28,6 +45,14 @@ public class SequenceGenerator
             _sequenceParam.YResolution);
     }
 
+    /// <summary>
+    ///     The function that can be called repeatedly
+    ///     to get the next image in the sequence.
+    /// </summary>
+    /// <returns>
+    ///     The next <see cref="BrotImage"/> in the sequence.
+    /// </returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public BrotImage Generate()
     {
         if (!HasNextImage)
@@ -35,7 +60,7 @@ public class SequenceGenerator
             throw new InvalidOperationException("No more images to generate.");
         }
 
-        currentImage = _generatingFunction(currentImageParam);
+        var currentImage = _generatingFunction(currentImageParam);
 
         currentImageSize *= _sequenceParam.ZoomFactor;
 
