@@ -21,7 +21,7 @@ public interface IBuilderStart
     ///     The next stage of the builder <see cref="IBuilderWithCalculationResult"/>.
     /// </returns>
     IBuilderWithCalculationResult ExecuteLoopedCalculation(
-        Func<LoopParam, CalcResult[,]> calculationLoop);
+        Func<LoopParam, (double[,]?, int[,])> calculationLoop);
 }
 
 /// <summary>
@@ -59,7 +59,8 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
 {
     private DateTime _calculationStartTime;
     private LoopParam? _loopParam;
-    private CalcResult[,]? _calculationResults;
+    private int[,]? _iterResult;
+    private double[,]? _speedResult;
     private int _maxIterations;
     private int _minIterations;
     private int _pointsInFractal;
@@ -101,32 +102,34 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
 
     /// <inheritdoc/>
     public IBuilderWithCalculationResult ExecuteLoopedCalculation(
-        Func<LoopParam, CalcResult[,]> calculationLoop)
+        Func<LoopParam, (double[,]?, int[,])> calculationLoop)
     {
         CheckIfBuilderHasbeenInitialized(nameof(ExecuteLoopedCalculation));
 
-        _calculationResults = calculationLoop(_loopParam);
-
+        var result = calculationLoop(_loopParam);
+        _iterResult = result.Item2;
+        _speedResult = result.Item1;
         return this;
     }
 
     /// <inheritdoc/>
     public IBuilderWithMetaData AddIterationMetaData()
     {
-        CheckIfCalculationHasBeenPerformed(nameof(AddIterationMetaData));
+        CheckIfIterationsAreCalculated(nameof(AddIterationMetaData));
+        CheckIfEscapeSpeedShouldHaveBeenCalculated(nameof(AddIterationMetaData));
 
-        var queryable = _calculationResults.Cast<CalcResult>();
+        var queryable = _iterResult.Cast<int>();
 
         _maxIterations = queryable
-            .Where(result => result.Iterations != 0)
-            .Max(result => result.Iterations);
+            .Where(result => result != 0)
+            .Max();
 
         _minIterations = queryable
-            .Where(result => result.Iterations != 0)
-            .Min(result => result.Iterations);
+            .Where(result => result != 0)
+            .Min();
 
         _pointsInFractal = queryable
-            .Where(result => result.Iterations == 0)
+            .Where(result => result == 0)
             .Count();
 
         _calculationTime = DateTime.Now - _calculationStartTime;
@@ -138,7 +141,8 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
     public IterationData Build()
     {
         CheckIfBuilderHasbeenInitialized(nameof(Build));
-        CheckIfCalculationHasBeenPerformed(nameof(Build));
+        CheckIfIterationsAreCalculated(nameof(Build));
+        CheckIfEscapeSpeedShouldHaveBeenCalculated(nameof(Build));
         CheckIfBuilderHasIterationMetaData(nameof(Build));
 
         return new IterationData
@@ -147,7 +151,8 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
             Bound = _loopParam.Bound,
             MaxCalculatedIterations = _loopParam.Bound,
             IsContinuous = _loopParam.IsContinuous,
-            CalculationResults = _calculationResults,
+            Iterations = _iterResult,
+            EscapeSpeeds = _speedResult,
             MaxIterations = _maxIterations,
             MinIterations = _minIterations,
             PointsInFractal = _pointsInFractal,
@@ -175,13 +180,23 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         }
     }
 
-    [MemberNotNull(nameof(_calculationResults))]
-    private void CheckIfCalculationHasBeenPerformed(string currentMethodName)
+    [MemberNotNull(nameof(_iterResult))]
+    private void CheckIfIterationsAreCalculated(string currentMethodName)
     {
-        if (_calculationResults is null)
+        if (_iterResult is null)
         {
             throw new MethodAccessException($@"Method {currentMethodName} should not be accessible
-            unless {nameof(_calculationResults)} has been set by {nameof(ExecuteLoopedCalculation)}");
+            unless {nameof(_iterResult)} has been set by {nameof(ExecuteLoopedCalculation)}");
+        }
+    }
+
+    private void CheckIfEscapeSpeedShouldHaveBeenCalculated(string currentMethodName)
+    {
+        CheckIfBuilderHasbeenInitialized(currentMethodName);
+        if (_loopParam.IsContinuous && _speedResult is null)
+        {
+            throw new MemberAccessException($@"Method {currentMethodName} should not be accessible
+            unless {nameof(_speedResult)} has been set by {nameof(ExecuteLoopedCalculation)}");
         }
     }
 }

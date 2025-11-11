@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Linq.Expressions;
 using Mandelbrot.ExtensionMethods;
 using Mandelbrot.Model;
 
@@ -12,7 +13,7 @@ public class ColorPicker
     private List<Color> colors = new List<Color>();
     private static string pallettesFolder = "Storage/Pallettes/";
 
-    private List<double?> _escapeSpeedThresholds = new List<double?>();
+    private List<double> _escapeSpeedThresholds = new List<double>();
 
     /// <summary>
     ///     Initializes a new instance of the
@@ -55,7 +56,7 @@ public class ColorPicker
     {
         var startTime = DateTime.Now;
 
-        var iterations = iterationData.CalculationResults;
+        var iterations = iterationData.Iterations;
         var spaceParam = iterationData.SpaceParam;
 
         var image = new Bitmap(spaceParam.XSize, spaceParam.YSize);
@@ -64,7 +65,7 @@ public class ColorPicker
         {
             for (int y = 0; y < spaceParam.YSize; y++)
             {
-                var color = GetColorFromIterations(iterations[x, y].Iterations,
+                var color = GetColorFromIterations(iterations[x, y],
                     iterationData.MinIterations,
                     iterationData.MaxIterations);
                 image.SetPixel(x, y, color);
@@ -90,7 +91,11 @@ public class ColorPicker
     {
         var startTime = DateTime.Now;
 
-        var escapeSpeeds = iterationData.CalculationResults;
+        var escapeSpeeds = iterationData.EscapeSpeeds;
+        if (escapeSpeeds is null)
+        {
+            return GetColorFromIterations(iterationData);
+        }
         
         SetEscapeSpeedThresholds(escapeSpeeds);
 
@@ -101,43 +106,90 @@ public class ColorPicker
         {
             for (int y = 0; y < spaceParam.YSize; y++)
             {
-                var color = GetColorFromEscapeSpeed(escapeSpeeds[x, y].EscapeSpeed);
+                var color = GetColorFromEscapeSpeed(escapeSpeeds[x, y]);
                 image.SetPixel(x, y, color);
             }
         }
+
+        SetColorsInFinalThreshold(image, iterationData);
 
         var colorTime = DateTime.Now - startTime;
 
         return iterationData.ToBrotImage(image, colorTime);
     }
 
-    private void SetEscapeSpeedThresholds(CalcResult[,] escapeSpeeds)
+    private void SetEscapeSpeedThresholds(double[,] escapeSpeeds)
     {
         var numThresholds = colors.Count();
 
-        var queryable = escapeSpeeds.Cast<CalcResult>();
-        var count = queryable.Where(calc => calc.Iterations != 0).Count();
+        var queryable = escapeSpeeds.Cast<double>();
+        var count = queryable.Where(iter => iter != 0).Count();
         var skipSize = count / numThresholds;
         var initialSkipSize = count % skipSize;
 
-        var max = queryable.Max(calc => calc.EscapeSpeed);
-        var min = queryable.Where(calc => calc.Iterations != 0).Min(calc => calc.EscapeSpeed);
+        var max = queryable.Max();
+        var min = queryable.Where(iter => iter != 0).Min();
         var result = queryable
-            .Where(calc => calc.Iterations != 0)
-            .OrderBy(calc => calc.EscapeSpeed)
+            .Where(iter => iter != 0)
+            .Order()
             .Where((item, index) =>
                 (index - initialSkipSize) % skipSize == 0)
-            .Select(calc => calc.EscapeSpeed)
             .Skip(1)
             .SkipLast(1)
             .ToList()
             ;
 
-        var final = new List<double?> { min };
+        var final = new List<double> { min };
         final.AddRange(result);
         final.Add(max);
 
         _escapeSpeedThresholds = final;
+    }
+
+    private Bitmap SetColorsInFinalThreshold(Bitmap image, IterationData iterData)
+    {
+        if (iterData.EscapeSpeeds is null)
+        {
+            throw new ArgumentException("Escape Speeds should not be null");
+        }
+
+        var spaceParam = iterData.SpaceParam;
+        var queryable = iterData.EscapeSpeeds.Cast<double>();
+
+        var top = _escapeSpeedThresholds[^1];
+        var bottom = _escapeSpeedThresholds[^2];
+
+        var reference = queryable
+            .Where(iter => iter != 0)
+            .Order()
+            .Where(iter => iter >= bottom && iter <= top)
+            .ToList()
+            ;
+
+        var max = reference.Count;
+
+        var escapeSpeeds = iterData.EscapeSpeeds;
+
+        for (int x = 0; x < spaceParam.XSize; x++)
+        {
+            for (int y = 0; y < spaceParam.YSize; y++)
+            {
+                if (escapeSpeeds[x, y] < bottom)
+                {
+                    continue;
+                }
+
+
+                var index = reference.FindIndex(item => item == escapeSpeeds[x, y]);
+                var color = InterpolateColors(
+                    colors[^2],
+                    colors[^1],
+                    (double)index / max);
+                image.SetPixel(x, y, color);
+            }
+        }
+
+        return image;
     }
 
     private Color GetColorFromEscapeSpeed(double? escapeSpeed)

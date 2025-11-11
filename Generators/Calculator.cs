@@ -79,10 +79,11 @@ public class Calculator
         return result;
     }
 
-    private CalcResult[,] ParallelLoop(LoopParam loopParam)
+    private (double[,]?, int[,]) ParallelLoop(LoopParam loopParam)
     {
         var spaceParam = loopParam.SpaceParam;
-        var result = new CalcResult[spaceParam.XSize, spaceParam.YSize];
+        var iterResult = new int[spaceParam.XSize, spaceParam.YSize];
+        var speedResult = new double[spaceParam.XSize, spaceParam.YSize];
         var inputSpace = GenerateInputSpace(spaceParam);
 
         for (int x = 0; x < spaceParam.XSize; x++)
@@ -90,11 +91,20 @@ public class Calculator
             Parallel.For(0, spaceParam.YSize, y =>
             {
                 var calcParam = loopParam.ToCalcParam(inputSpace[x, y]);
-                result[x, y] = CalculateIteration(calcParam, 0, new Complex(0, 0));
+                var result = CalculateIteration(calcParam, 0, new Complex(0, 0));
+                iterResult[x, y] = result.Iterations;
+                if (result.EscapeSpeed != null)
+                {
+                    speedResult[x, y] = (double)result.EscapeSpeed;
+                }
             });
         }
 
-        return result;
+        if (loopParam.IsContinuous)
+        {
+            return (speedResult, iterResult);
+        }
+        return (null, iterResult);
     }
     
     private CalcResult CalculateIteration(CalcParam calcParam, int currentIteration, Complex z)

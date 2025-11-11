@@ -50,6 +50,7 @@ public static class Tester
         {
             var image = sequenceGenerator.Generate();
 
+            Console.WriteLine($"Image number: {imageNumber}");
             Console.WriteLine(image.ToMyString());
 
             image.Image.Save($"{baseFileName}{imageNumber}.png", ImageFormat.Png);

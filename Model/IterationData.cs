@@ -14,7 +14,17 @@ public record IterationData : LoopParam
     /// <summary>
     ///     Contains the raw data for iterations and escape speed of all points.
     /// </summary>
-    public required CalcResult[,] CalculationResults;
+    // public required CalcResult[,] CalculationResults;
+
+    /// <summary>
+    ///     Contains the raw data for iterations.
+    /// </summary>
+    public required int[,] Iterations;
+    
+    /// <summary>
+    ///     Contains the raw data for escape speeds if IsContinuous is true.
+    /// </summary>
+    public double[,]? EscapeSpeeds;
 
     /// <summary>
     ///     Of all the points not in the fractal this is the maximum number of iterations.
