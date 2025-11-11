@@ -1,5 +1,6 @@
 using System.Drawing;
 using Mandelbrot.Model;
+using Mandelbrot.Model.Parameters;
 
 namespace Mandelbrot.Generators;
 
@@ -32,7 +33,7 @@ public class ImageGenerator
     /// <returns>
     ///     <see cref="BrotImage"/> containing the generated image and metadata.
     /// </returns
-    public BrotImage GenerateSmooth(ComplexSpaceParameters input)
+    public BrotImage GenerateSmooth(SpaceParam input)
     {
         var rawData = _calculator.GenerateIterationData(input, true);
 
@@ -41,13 +42,24 @@ public class ImageGenerator
         return image;
     }
 
-    public BrotImage Generate(ComplexSpaceParameters input)
+    public BrotImage Generate(SpaceParam input)
     {
         var rawData = _calculator.GenerateIterationData(input, false);
 
         var image = _colorPicker.GetColorFromIterations(rawData);
 
         return image;
-        
+    }
+
+    public SequenceGenerator GetSmoothSequence(SequenceParam sequenceParam)
+    {
+        var sequenceGenerator = new SequenceGenerator(sequenceParam, GenerateSmooth);
+        return sequenceGenerator;
+    }
+    
+    public SequenceGenerator GetFastSequence(SequenceParam sequenceParam)
+    {
+        var sequenceGenerator = new SequenceGenerator(sequenceParam, Generate);
+        return sequenceGenerator;
     }
 }

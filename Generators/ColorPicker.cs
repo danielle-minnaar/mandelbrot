@@ -99,19 +99,26 @@ public class ColorPicker
         var queryable = escapeSpeeds.Cast<CalcResult>();
         var count = queryable.Where(calc => calc.Iterations != 0).Count();
         var skipSize = count / numThresholds;
+        var initialSkipSize = count % skipSize;
 
         var max = queryable.Max(calc => calc.EscapeSpeed);
+        var min = queryable.Where(calc => calc.Iterations != 0).Min(calc => calc.EscapeSpeed);
         var result = queryable
             .Where(calc => calc.Iterations != 0)
             .OrderBy(calc => calc.EscapeSpeed)
-            .Where((item, index) => index % skipSize == 0)
-            .SkipLast(1)
+            .Where((item, index) =>
+                (index - initialSkipSize) % skipSize == 0)
             .Select(calc => calc.EscapeSpeed)
+            .Skip(1)
+            .SkipLast(1)
             .ToList()
             ;
 
-        result.Add(max);
-        _escapeSpeedThresholds = result;
+        var final = new List<double?> { min };
+        final.AddRange(result);
+        final.Add(max);
+
+        _escapeSpeedThresholds = final;
     }
 
     private Color GetColorFromEscapeSpeed(double? escapeSpeed)
@@ -127,18 +134,20 @@ public class ColorPicker
         for (int i = 0; i < _escapeSpeedThresholds.Count(); i++)
         {
             var threshold = _escapeSpeedThresholds[i];
-            if (threshold <= escapeSpeed && threshold > lowerValue)
+            if (threshold < escapeSpeed && threshold > lowerValue)
             {
                 lowerValue = threshold;
                 colorId = Math.Min(i, colors.Count() - 1);
             }
-            else if (threshold > escapeSpeed && threshold < higherValue)
+            else if (threshold >= escapeSpeed && threshold < higherValue)
             {
                 higherValue = threshold;
             }
         }
 
         var fraction = (escapeSpeed - lowerValue) / (higherValue - lowerValue);
+
+
         var color1 = colors[colorId];
         var color2 = colors[Math.Min(colorId + 1, colors.Count() - 1)];
 
@@ -149,17 +158,12 @@ public class ColorPicker
     {
         if (fraction is null || fraction < 0 || fraction > 1)
         {
-            throw new ArgumentException($"This is not correct: {fraction}");
+            throw new ArgumentException($"Bad fraction: {fraction}");
         }
-        int R = (int)(
-            Math.Min(color1.R, color2.R) +
-            Math.Abs(color1.R - color2.R) * fraction);
-        int G = (int)(
-            Math.Min(color1.G, color2.G) +
-            Math.Abs(color1.G - color2.G) * fraction);
-        int B = (int)(
-            Math.Min(color1.B, color2.B) +
-            Math.Abs(color1.B - color2.B) * fraction);
+
+        int R = (int)(color1.R + (color2.R - color1.R) * fraction);
+        int G = (int)(color1.G + (color2.G - color1.G) * fraction);
+        int B = (int)(color1.B + (color2.B - color1.B) * fraction);
         return Color.FromArgb(R, G, B);
     }
     

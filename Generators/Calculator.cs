@@ -1,10 +1,8 @@
-using System.Linq.Expressions;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using Mandelbrot.ExtensionMethods;
 using Mandelbrot.Helpers;
 using Mandelbrot.Model;
-using Microsoft.VisualBasic;
+using Mandelbrot.Model.Parameters;
 
 namespace Mandelbrot.Generators;
 
@@ -37,14 +35,14 @@ public class Calculator
         _continuousBound = continuousBound;
     }
 
-    public IterationData GenerateIterationData(ComplexSpaceParameters spaceParam, bool isContinuous)
+    public IterationData GenerateIterationData(SpaceParam spaceParam, bool isContinuous)
     {
         var loopParam = new LoopParam
         {
             SpaceParam = spaceParam,
             Bound = isContinuous ? _continuousBound : 2,
             MaxCalculatedIterations = _prevCalc is null
-                ? 200
+                ? _iterationFactor
                 : _prevCalc.MinIterations * _iterationFactor,
             IsContinuous = isContinuous
         };
@@ -110,7 +108,7 @@ public class Calculator
         return CalculateIteration(calcParam, currentIteration, z);
     }
 
-    private static Complex[,] GenerateInputSpace(ComplexSpaceParameters spaceParam)
+    private static Complex[,] GenerateInputSpace(SpaceParam spaceParam)
     {
         var xMin = spaceParam.XMin;
         var xMax = spaceParam.XMax;
