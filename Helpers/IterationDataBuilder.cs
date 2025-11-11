@@ -1,23 +1,59 @@
 using Mandelbrot.Model;
 using Mandelbrot.Model.Parameters;
+using Mandelbrot.Generators;
 
 namespace Mandelbrot.Helpers;
 
+/// <summary>
+///     Interface for after the builder has been initialized.
+/// </summary>
 public interface IBuilderStart
 {
-    IBuilderWithCalculationResult ExecuteLoopedCalculation(Func<LoopParam, CalcResult[,]> calculationLoop);
+    /// <summary>
+    ///     Executes the provided calculation according to
+    ///     the <see cref="LoopParam"/> held by the builder.
+    /// </summary>
+    /// <param name="calculationLoop">
+    ///     The calculation should be defined in <see cref="Calculator"/>.
+    /// </param>
+    /// <returns>
+    ///     The next stage of the builder <see cref="IBuilderWithCalculationResult"/>.
+    /// </returns>
+    IBuilderWithCalculationResult ExecuteLoopedCalculation(
+        Func<LoopParam, CalcResult[,]> calculationLoop);
 }
 
+/// <summary>
+///     Interface for the builder after the calculation has been performed.
+/// </summary>
 public interface IBuilderWithCalculationResult
 {
+    /// <summary>
+    ///     Based on the result of the calculation determine meta data regarding it.
+    /// </summary>
+    /// <returns>
+    ///     The next stage of the builder <see cref="IBuilderWithMetaData"/>.
+    /// </returns>
     IBuilderWithMetaData AddIterationMetaData();
 }
 
+/// <summary>
+///     Interface for the final stage of the builder.
+/// </summary>
 public interface IBuilderWithMetaData
 {
+    /// <summary>
+    ///     Using the provided values create an <see cref="IterationData"/> object.
+    /// </summary>
+    /// <returns>
+    ///     The result of the builder.
+    /// </returns>
     IterationData Build();
 }
 
+/// <summary>
+///     A builder to correctly assemble the <see cref="IterationData"/> object.
+/// </summary>
 public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult, IBuilderWithMetaData
 {
     private DateTime _calculationStartTime;
@@ -28,6 +64,18 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
     private int _pointsInFractal;
     private TimeSpan _calculationTime;
 
+    /// <summary>
+    ///     Set the initial values.
+    /// </summary>
+    /// <param name="loopParam">
+    ///     The parameters needed to perform the calculations.
+    /// </param>
+    /// <returns>
+    ///     The first stage of the builder: <see cref="IBuilderStart"/>.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     Throws if the bound or max calculated iterations inside of LoopParam are invalid
+    /// </exception>
     public IBuilderStart Initialize(LoopParam loopParam)
     {
         if (loopParam.Bound <= 0)
@@ -50,6 +98,7 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         return this;
     }
 
+    /// <inheritdoc/>
     public IBuilderWithCalculationResult ExecuteLoopedCalculation(
         Func<LoopParam, CalcResult[,]> calculationLoop)
     {
@@ -60,6 +109,7 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         return this;
     }
 
+    /// <inheritdoc/>
     public IBuilderWithMetaData AddIterationMetaData()
     {
         CheckIfCalculationHasBeenPerformed(nameof(AddIterationMetaData));
@@ -83,6 +133,7 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         return this;
     }
 
+    /// <inheritdoc/>
     public IterationData Build()
     {
         CheckIfBuilderHasbeenInitialized(nameof(Build));

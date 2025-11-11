@@ -1,10 +1,14 @@
 using Mandelbrot.Model.Parameters;
+using Mandelbrot.Helpers;
 
 namespace Mandelbrot.Model;
 
 /// <summary>
 ///     A dto that contains meta data and raw data about iterations.
 /// </summary>
+/// <remarks>
+///     To ensure this object is assembled correctly always use <see cref="IterationDataBuilder"/>
+/// </remarks>
 public record IterationData : LoopParam
 {
     /// <summary>
