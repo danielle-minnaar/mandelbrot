@@ -11,7 +11,7 @@ public static class Tester
 {
     public static void Test()
     {
-        var colorPicker = new ColorPicker("BigCtW.png");
+        var colorPicker = new ColorPicker("CtWMedium.png");
         var generator = new ImageGenerator(colorPicker);
         // var center = new Complex(-0.21756183674433, -1.11441769882846);
         var center = new Complex(-1, 0);
@@ -21,13 +21,13 @@ public static class Tester
 
         var image = generator.GenerateSmooth(input);
 
-        var filePath = Path.Combine("Storage/Images", "Image2.png");
+        var filePath = Path.Combine("Storage/Images", "Image5.png");
         image.Image.Save(filePath, ImageFormat.Png);
     }
 
     public static void TestSequence()
     {
-        var colorPicker = new ColorPicker("TripleBand.png");
+        var colorPicker = new ColorPicker("CtWMedium.png");
         var imageGenerator = new ImageGenerator(colorPicker);
 
         var sequenceParam = new SequenceParam
