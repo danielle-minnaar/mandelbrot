@@ -1,11 +1,25 @@
 using System.Drawing;
 using Mandelbrot.Model;
 
-namespace Mandelbrot.Helpers.ColorKernels.Implementations;
+namespace Mandelbrot.Helpers.ColorKernels.Implementations.DoubleKernels;
 
-public class ContinousKernel : DoubleKernelBase
+/// <summary>
+///     The kernel that aplies continuous coloring.
+/// </summary>
+public class ContinuousKernel : DoubleKernelBase
 {
-    public ContinousKernel(double[,] escapeSpeeds, Color[] colorPalette, double colorSkew) : base(escapeSpeeds, colorPalette, colorSkew) {}
+    /// <summary>
+    ///     The constructor.
+    /// </summary>
+    /// <param name="iterData">The data.</param>
+    /// <param name="colorPalette">The colors.</param>
+    /// <param name="colorSkew">The color skew.</param>
+    public ContinuousKernel(
+        IterationData iterData,
+        Color[] colorPalette,
+        double colorSkew) : base(iterData, colorPalette, colorSkew) {}
+    
+    /// <inheritdoc/>
     public override Color Apply(int x, int y)
     {
         var speed = _escapeSpeeds[x, y];
