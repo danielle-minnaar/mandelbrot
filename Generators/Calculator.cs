@@ -104,6 +104,7 @@ public class Calculator
         {
             return (speedResult, iterResult);
         }
+        
         return (null, iterResult);
     }
     
@@ -128,7 +129,10 @@ public class Calculator
                     };
                 }
 
-                return new CalcResult { Iterations = i };
+                return new CalcResult 
+                { 
+                    Iterations = i
+                };
             }
             
             z = z * z + calcParam.InputPoint;
