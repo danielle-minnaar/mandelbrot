@@ -16,44 +16,20 @@ public class ImageGenerator
 
     /// <summary>
     ///     Initializes the ImageGenerator with a
-    ///     color picker and a standard calculator.
+    ///     color picker and a calculator.
     /// </summary>
     /// <param name="colorPicker">
     ///     The <see cref="ColorPicker"/> used to color the image.
     /// </param>
-    public ImageGenerator(ColorPicker colorPicker)
+    /// <param name="calculator">
+    ///     The <see cref="Calculator"/> used to calculate the raw data.
+    ///     If left empty it will use the standard calculator.
+    /// </param>
+    public ImageGenerator(ColorPicker colorPicker, Calculator? calculator = null)
     {
+        _calculator = calculator is null ? new Calculator() : calculator;
         _colorPicker = colorPicker;
-        _calculator = new Calculator();
     }
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ImageGenerator"/> class
-    ///     with specified color picker and a modified calculator.
-    /// </summary>
-    /// <param name="colorPicker">
-    ///     The <see cref="ColorPicker"/> used to color the image.
-    /// </param>
-    /// <param name="initialIter">
-    ///     The max iterations for the first image.
-    /// </param>
-    /// <param name="bound">
-    ///     The boundary value.
-    /// </param>
-    /// <param name="iterFactor">
-    ///     Used to dynamically determine the number of iterations
-    ///     in image sequences.
-    /// </param>
-    public ImageGenerator(
-        ColorPicker colorPicker,
-        int initialIter = 200,
-        int bound = 2000,
-        int iterFactor = 200)
-    {
-        _colorPicker = colorPicker;
-        _calculator = new Calculator(iterFactor, bound, initialIter);
-    }
-
 
     /// <summary>
     ///     Generates a Mandelbrot image using smooth coloring based on escape speed.
@@ -64,11 +40,11 @@ public class ImageGenerator
     /// <returns>
     ///     <see cref="BrotImage"/> containing the generated image and metadata.
     /// </returns>
-    public BrotImage GenerateSmooth(SpaceParam input)
+    public BrotImage GenerateContinuous(SpaceParam input)
     {
         var rawData = _calculator.GenerateIterationData(input, true);
 
-        var image = _colorPicker.GetColorFromEscapeSpeed(rawData);
+        var image = _colorPicker.GetContinuousColor(rawData);
 
         return image;
     }
@@ -82,11 +58,20 @@ public class ImageGenerator
     /// <returns>
     ///     <see cref="BrotImage"/> containing the generated image and metadata.
     /// </returns>
-    public BrotImage Generate(SpaceParam input)
+    public BrotImage GenerateBanded(SpaceParam input)
     {
         var rawData = _calculator.GenerateIterationData(input, false);
 
-        var image = _colorPicker.GetColorFromIterations(rawData);
+        var image = _colorPicker.GetBandedColor(rawData);
+
+        return image;
+    }
+
+    public BrotImage GenerateDithered(SpaceParam input)
+    {
+        var rawData = _calculator.GenerateIterationData(input, true);
+
+        var image = _colorPicker.GetDitheredColor(rawData);
 
         return image;
     }
@@ -100,9 +85,9 @@ public class ImageGenerator
     /// <returns>
     ///     <see cref="SequenceGenerator"/> that generates the images.
     /// </returns>
-    public SequenceGenerator GetSmoothSequence(SequenceParam sequenceParam)
+    public SequenceGenerator GetContinuousSequence(SequenceParam sequenceParam)
     {
-        var sequenceGenerator = new SequenceGenerator(sequenceParam, GenerateSmooth);
+        var sequenceGenerator = new SequenceGenerator(sequenceParam, GenerateContinuous);
         return sequenceGenerator;
     }
     
@@ -115,9 +100,9 @@ public class ImageGenerator
     /// <returns>
     ///     <see cref="SequenceGenerator"/> that generates the images.
     /// </returns>
-    public SequenceGenerator GetFastSequence(SequenceParam sequenceParam)
+    public SequenceGenerator GetBandedSequence(SequenceParam sequenceParam)
     {
-        var sequenceGenerator = new SequenceGenerator(sequenceParam, Generate);
+        var sequenceGenerator = new SequenceGenerator(sequenceParam, GenerateBanded);
         return sequenceGenerator;
     }
 }
