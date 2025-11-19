@@ -1,17 +1,31 @@
 using System.Drawing;
+using Mandelbrot.Model;
 
 namespace Mandelbrot.Helpers.ColorKernels.Implementations;
 
-public class BandedKernel : IColorKernel
+/// <summary>
+///     A coloring kernel that produces color bands based on number of iterations.
+/// </summary>
+public class BandedKernel : KernelBase
 {
     private readonly int[,] _iterations;
     private readonly int _minIterations;
     private readonly int _maxIterations;
-    private readonly Color[] _colorPalette;
-    public BandedKernel(int[,] iterations, Color[] colorPalette)
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="BandedKernel"/> class.
+    /// </summary>
+    /// <param name="iterData">
+    ///     The raw data held in a <see cref="IterationData"/>.
+    /// </param>
+    /// <param name="colorPalette">
+    ///     The color palette
+    /// </param>
+    public BandedKernel(
+        IterationData iterData,
+        Color[] colorPalette) : base(iterData, colorPalette)
     {
-        _iterations = iterations;
-        _colorPalette = colorPalette;
+        _iterations = iterData.Iterations;
         
         var queryable = _iterations.Cast<int>();
         var count = queryable
@@ -27,7 +41,8 @@ public class BandedKernel : IColorKernel
             .Last();
     }
 
-    public Color Apply(int x, int y)
+    /// <inheritdoc/>
+    public override Color Apply(int x, int y)
     {
         var iteration = _iterations[x, y];
 

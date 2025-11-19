@@ -1,22 +1,57 @@
 using System.Drawing;
+using Mandelbrot.Model;
 
 namespace Mandelbrot.Helpers.ColorKernels.Implementations;
 
-public abstract class DoubleKernelBase : IColorKernel
+/// <summary>
+///     The base class that all color kernels that use doubles inherit from.
+/// </summary>
+public abstract class DoubleKernelBase : KernelBase
 {
+    /// <summary>
+    ///     The escape speed data that the kernel is applied to.
+    /// </summary>
     protected readonly double[,] _escapeSpeeds;
+    
+    /// <summary>
+    ///     The threshold values that are used to determine the spacing of colors.
+    /// </summary>
     protected readonly double[] _escapeSpeedThresholds;
-    protected readonly Color[] _colorPalette;
 
-
-    protected DoubleKernelBase(double[,] escapeSpeeds, Color[] colorPalette, double colorSkew)
+    /// <summary>
+    ///     Base constructor that all color kernels based on doubles use.
+    /// </summary>
+    /// <param name="iterData">
+    ///     The raw data.
+    /// </param>
+    /// <param name="colorPalette">
+    ///     The color palette.
+    /// </param>
+    /// <param name="colorSkew">
+    ///     The skew in color.
+    /// </param>
+    /// <exception cref="ArgumentNullException"></exception>
+    protected DoubleKernelBase(
+        IterationData iterData,
+        Color[] colorPalette,
+        double colorSkew) : base(iterData, colorPalette)
     {
-        _escapeSpeeds = escapeSpeeds;
-        _colorPalette = colorPalette;
+        _escapeSpeeds = iterData.EscapeSpeeds ??
+            throw new ArgumentNullException(nameof(iterData));
         _escapeSpeedThresholds = GetUnevenEscapeSpeedThresholds(colorSkew);
         
     }
 
+    /// <summary>
+    ///     Get the colorId based on escape speed.
+    /// </summary>
+    /// <param name="speed">
+    ///     The supplied escape speed.
+    /// </param>
+    /// <returns>
+    ///     The index for the colorPalette, includes a fractional component
+    ///     that indicates how close it is to this index and the next one.
+    /// </returns>
     protected double GetFractionalColorId(double speed)
     {
         var colorId = 0;
@@ -47,6 +82,11 @@ public abstract class DoubleKernelBase : IColorKernel
         return colorId + fraction;
     }
 
+    /// <summary>
+    ///     Get the escape speed thresholds based on the escape speeds.
+    /// </summary>
+    /// <param name="skew"></param>
+    /// <returns></returns>
     private double[] GetUnevenEscapeSpeedThresholds(double skew)
     {
         var numberOfBins = _colorPalette.Length - 1;
@@ -83,6 +123,4 @@ public abstract class DoubleKernelBase : IColorKernel
 
         return result;
     }
-
-    public abstract Color Apply(int x, int y);
 }
