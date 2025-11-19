@@ -5,6 +5,7 @@
 .vscode/
 .vs/
 
+*.aseprite
 
 [Dd]ebug/
 [Dd]ebugPublic/
