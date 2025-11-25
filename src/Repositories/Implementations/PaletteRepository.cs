@@ -28,7 +28,9 @@ public class PaletteRepository : IPaletteRepository
     public async Task<ColorPalette[]> GetAll()
     {
         var palettes = await Read();
-        return palettes.ToArray();
+        return palettes
+            .OrderBy(palette => palette.LastUseTime)
+            .ToArray();
     }
 
     /// <inheritdoc/>
@@ -83,7 +85,7 @@ public class PaletteRepository : IPaletteRepository
         var colorsPath = $"{_settings.ColorsLocation}/{item.Name}.png";
         if (!File.Exists(colorsPath))
         {
-            var m = $"When trying to create color palette with name: {item.Name}, could not find a colors file at: {colorsPath}";
+            var m = $"When trying to create color palette with name: {item.Name}, could not find colors file: {colorsPath}";
             throw new FileNotFoundException(m);
         }
 
@@ -98,7 +100,7 @@ public class PaletteRepository : IPaletteRepository
         var docPath = _settings.ColorPaletteDbLocation;
         if (!File.Exists(docPath))
         {
-            var m = $"Could not access the db file at: {docPath}";
+            var m = $"While reading could not find the db at: {docPath}";
             throw new FileNotFoundException(m);
         }
 
@@ -127,6 +129,11 @@ public class PaletteRepository : IPaletteRepository
     {
         string palettesJson = JsonConvert.SerializeObject(palettes);
         string docPath = _settings.ColorPaletteDbLocation;
+        if (!File.Exists(docPath))
+        {
+            var m = $"While writing could not find the db at: {docPath}";
+            throw new FileNotFoundException(m);
+        }
 
         using (var outputFile = new StreamWriter(docPath))
         {
