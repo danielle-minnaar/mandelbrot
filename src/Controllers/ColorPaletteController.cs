@@ -3,6 +3,7 @@ using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 
 namespace Mandelbrot.src.Controllers;
@@ -38,20 +39,16 @@ public class ColorPaletteController : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<string>> GetAll()
     {
-        ColorPalette[] palettes;
         try
         {
-            palettes = await _colorPalettes.GetAll();
+            var palettes = await _colorPalettes.GetAll();
+            var result = palettes.Select(palette => palette.ToDto()).ToList();
+            return Ok(JsonConvert.SerializeObject(result));
         }
         catch (FileNotFoundException e)
         {
             return NotFound(e.Message);
         }
-
-        var result = palettes.Select(palette => palette.ToDto()).ToList();
-        
-        return Ok(JsonConvert.SerializeObject(result));
-        
     }
 
     /// <summary>
@@ -78,6 +75,35 @@ public class ColorPaletteController : ControllerBase
         catch (ArgumentException e)
         {
             return BadRequest(e.Message);
+        }
+    }
+
+    /// <summary>
+    ///     Get a color palette by id.
+    /// </summary>
+    /// <param name="id">
+    ///     The <see cref="Guid"/> of the color palette.
+    /// </param>
+    /// <returns>
+    ///     A JSON formatted <see cref="ColorPaletteDto"/>
+    /// </returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType<ColorPaletteDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<string>> GetById(Guid id)
+    {
+        try
+        {
+            var result = await _colorPalettes.GetById(id);
+            return JsonConvert.SerializeObject(result.ToDto());
+        }
+        catch (FileNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (NullReferenceException e)
+        {
+            return NotFound(e.Message);
         }
     }
 }
