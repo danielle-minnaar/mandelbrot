@@ -85,9 +85,9 @@ public class ColorPaletteController : ControllerBase
     ///     The <see cref="Guid"/> of the color palette.
     /// </param>
     /// <returns>
-    ///     A JSON formatted <see cref="ColorPaletteDto"/>
+    ///     A JSON formatted <see cref="ColorPaletteDto"/>.
     /// </returns>
-    [HttpGet("{id}")]
+    [HttpGet("id/{id}")]
     [ProducesResponseType<ColorPaletteDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<string>> GetById(Guid id)
@@ -96,6 +96,35 @@ public class ColorPaletteController : ControllerBase
         {
             var result = await _colorPalettes.GetById(id);
             return JsonConvert.SerializeObject(result.ToDto());
+        }
+        catch (FileNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (NullReferenceException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    /// <summary>
+    ///     Get a color palette by name.
+    /// </summary>
+    /// <param name="name">
+    ///     The name of the color palette.
+    /// </param>
+    /// <returns>
+    ///     A JSON formatted <see cref="ColorPaletteDto"/>.
+    /// </returns>
+    [HttpGet("name/{name}")]
+    [ProducesResponseType<ColorPaletteDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<string>> GetByName(string name)
+    {
+        try
+        {
+            var result = await _colorPalettes.GetByName(name);
+            return Ok(JsonConvert.SerializeObject(result.ToDto()));
         }
         catch (FileNotFoundException e)
         {
