@@ -1,3 +1,5 @@
+using Mandelbrot.src.Dtos;
+using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -29,28 +31,53 @@ public class ColorPaletteController : ControllerBase
     ///     Get all color palettes.
     /// </summary>
     /// <returns>
-    ///     A JSON formatted array of <see cref="ColorPalette"/>.
+    ///     A JSON formatted array of <see cref="ColorPaletteDto"/>.
     /// </returns>
     [HttpGet]
+    [ProducesResponseType<ColorPaletteDto[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<string>> GetAll()
     {
-        ColorPalette[] result;
+        ColorPalette[] palettes;
         try
         {
-            result = await _colorPalettes.GetAll();
+            palettes = await _colorPalettes.GetAll();
         }
         catch (FileNotFoundException e)
         {
             return NotFound(e.Message);
         }
+
+        var result = palettes.Select(palette => palette.ToDto()).ToList();
         
         return Ok(JsonConvert.SerializeObject(result));
         
     }
 
+    /// <summary>
+    ///     Create a new color palette. There needs to already be a .png file of the colors whith the same name.
+    /// </summary>
+    /// <param name="palette">
+    ///     The <see cref="ColorPalettePostDto"/> used to create the new color palette.
+    /// </param>
     [HttpPost]
-    public async Task Post([FromBody] ColorPalette palette)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<string>> Post([FromBody] ColorPalettePostDto palette)
     {
-        await _colorPalettes.CreateItem(palette);
+        try
+        {
+            await _colorPalettes.CreateItem(palette.ToModel());
+            return Created();
+        }
+        catch (FileNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }
