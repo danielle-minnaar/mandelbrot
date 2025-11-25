@@ -1,9 +1,9 @@
 using System.Drawing.Imaging;
 using System.Numerics;
-using Mandelbrot.ExtensionMethods;
-using Mandelbrot.Generators;
-using Mandelbrot.Model;
-using Mandelbrot.Model.Parameters;
+using Mandelbrot.src.ExtensionMethods;
+using Mandelbrot.src.Generators;
+using Mandelbrot.src.Model;
+using Mandelbrot.src.Model.Parameters;
 
 namespace Mandelbrot;
 
