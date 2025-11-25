@@ -39,7 +39,7 @@ public class PaletteRepository : IPaletteRepository
         var palettes = await Read();
         var palette = palettes
             .Where(palette => palette.Id == id)
-            .First()
+            .FirstOrDefault()
             ?? throw new NullReferenceException($"Color palette with id: {id} not found.");
         
         palette.LastUseTime = DateTime.Now;
@@ -54,7 +54,7 @@ public class PaletteRepository : IPaletteRepository
         var palettes = await Read();
         var palette = palettes
             .Where(palette => palette.Name == name)
-            .First()
+            .FirstOrDefault()
             ?? throw new NullReferenceException($"Color palette with name: {name} not found.");
 
         return palette;
