@@ -11,24 +11,17 @@ namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.DoubleKernels;
 /// </remarks>
 public class DitheredKernel : DoubleKernelBase
 {
-    private readonly double _ditherRatio;
+
     
     /// <summary>
     ///     The constructor.
     /// </summary>
     /// <param name="iterData">Raw data.</param>
     /// <param name="palette">The color palette.</param>
-    /// <param name="colorSkew">The color skew.</param>
-    /// <param name="ditherRatio">The ratio of a color band that is dithered</param>
     public DitheredKernel(
         IterationData iterData,
-        Color[] palette,
-        double colorSkew,
-        double ditherRatio = 0.2d)
-        : base(iterData, palette, colorSkew, ColorKernelType.Dithered)
-    {
-        _ditherRatio = ditherRatio;
-    }
+        ColorPalette palette)
+        : base(iterData, palette, ColorType.Dithered) { }
     
     /// <inheritdoc/>
     public override Color Apply(int x, int y)
@@ -39,17 +32,15 @@ public class DitheredKernel : DoubleKernelBase
             return Color.Black;
         }
 
-        var fractionalColorID = GetFractionalColorId(speed);
-        var colorId = (int)fractionalColorID;
-        var fraction = fractionalColorID - colorId;
+        var (colorId, idFraction) = GetFractionalColorId(speed);
 
         if ((x + y + colorId) % 2 == 0)
         {
-            colorId -= fraction < _ditherRatio ? 1 : 0;
-            colorId += fraction > (1 - _ditherRatio) ? 1 : 0;
-            colorId = Math.Clamp(colorId, 0, _colorPalette.Length);
+            colorId -= idFraction <= _palette.DitherRatio / 2 ? 1 : 0;
+            colorId += 1 - idFraction < _palette.DitherRatio / 2 ? 1 : 0;
+            colorId = Math.Clamp(colorId, 0, _palette.Colors.Length - 1);
         }
 
-        return _colorPalette[colorId];
+        return _palette.Colors[colorId];
     }
 }

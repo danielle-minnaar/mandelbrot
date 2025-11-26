@@ -12,13 +12,11 @@ public class ContinuousKernel : DoubleKernelBase
     ///     The constructor.
     /// </summary>
     /// <param name="iterData">The data.</param>
-    /// <param name="colorPalette">The colors.</param>
-    /// <param name="colorSkew">The color skew.</param>
+    /// <param name="palette">The colors.</param>
     public ContinuousKernel(
         IterationData iterData,
-        Color[] colorPalette,
-        double colorSkew)
-        : base(iterData, colorPalette, colorSkew, ColorKernelType.Continuous) {}
+        ColorPalette palette)
+        : base(iterData, palette, ColorType.Continuous) {}
     
     /// <inheritdoc/>
     public override Color Apply(int x, int y)
@@ -30,14 +28,12 @@ public class ContinuousKernel : DoubleKernelBase
             return Color.Black;
         }
         
-        var fractionalColorID = GetFractionalColorId(speed);
-        var colorId = (int)Math.Floor(fractionalColorID);
-        var fraction = fractionalColorID - colorId;
+        var (colorId, idFraction) = GetFractionalColorId(speed);
         
-        var color1 = _colorPalette[colorId];
-        var color2 = _colorPalette[Math.Min(colorId + 1, _colorPalette.Length - 1)];
+        var color1 = _palette.Colors[colorId];
+        var color2 = _palette.Colors[Math.Min(colorId + 1, _palette.Colors.Length - 1)];
 
-        return LinearInterpolate(color1, color2, fraction);
+        return LinearInterpolate(color1, color2, idFraction);
     }
 
     private static Color LinearInterpolate(Color color1, Color color2, double fraction)

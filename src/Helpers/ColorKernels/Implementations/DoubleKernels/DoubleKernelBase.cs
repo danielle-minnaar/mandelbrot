@@ -24,7 +24,7 @@ public abstract class DoubleKernelBase : KernelBase
     /// <param name="iterData">
     ///     The raw data.
     /// </param>
-    /// <param name="colorPalette">
+    /// <param name="palette">
     ///     The color palette.
     /// </param>
     /// <param name="colorSkew">
@@ -36,13 +36,12 @@ public abstract class DoubleKernelBase : KernelBase
     /// <exception cref="ArgumentNullException"></exception>
     protected DoubleKernelBase(
         IterationData iterData,
-        Color[] colorPalette,
-        double colorSkew,
-        ColorKernelType type) : base(iterData, colorPalette, type)
+        ColorPalette palette,
+        ColorType type) : base(iterData, palette, type)
     {
         _escapeSpeeds = iterData.EscapeSpeeds ??
             throw new ArgumentNullException(nameof(iterData));
-        _escapeSpeedThresholds = GetUnevenEscapeSpeedThresholds(colorSkew);
+        _escapeSpeedThresholds = GetUnevenEscapeSpeedThresholds(palette.ColorSkew);
         
     }
 
@@ -56,7 +55,7 @@ public abstract class DoubleKernelBase : KernelBase
     ///     The index for the colorPalette, includes a fractional component
     ///     that indicates how close it is to this index and the next one.
     /// </returns>
-    protected double GetFractionalColorId(double speed)
+    protected (int, double) GetFractionalColorId(double speed)
     {
         var colorId = 0;
         var lowerValue = _escapeSpeedThresholds[0];
@@ -64,7 +63,7 @@ public abstract class DoubleKernelBase : KernelBase
 
         if (speed > higherValue)
         {
-            return _escapeSpeedThresholds.Length - 1;
+            return (_escapeSpeedThresholds.Length - 1, 0);
         }
 
         for (int i = 0; i < _escapeSpeedThresholds.Length; i++)
@@ -75,7 +74,7 @@ public abstract class DoubleKernelBase : KernelBase
             if (threshold < speed && threshold > lowerValue)
             {
                 lowerValue = threshold;
-                colorId = Math.Min(i, _colorPalette.Length - 1);
+                colorId = Math.Min(i, _palette.Colors.Length - 1);
             }
 
             // Gets the smallest value greater than speed.
@@ -87,7 +86,7 @@ public abstract class DoubleKernelBase : KernelBase
 
         var fraction = (speed - lowerValue) / (higherValue - lowerValue);
 
-        return colorId + fraction;
+        return (colorId, fraction);
     }
 
     /// <summary>
@@ -97,7 +96,7 @@ public abstract class DoubleKernelBase : KernelBase
     /// <returns></returns>
     private double[] GetUnevenEscapeSpeedThresholds(double skew)
     {
-        var numberOfBins = _colorPalette.Length - 1;
+        var numberOfBins = _palette.Colors.Length - 1;
         var binSizes = new int[numberOfBins];
         var queryable = _escapeSpeeds.Cast<double>();
         var count = queryable.Where(speed => speed != 0).Count();
@@ -105,13 +104,13 @@ public abstract class DoubleKernelBase : KernelBase
 
         for (int i = 0; i < numberOfBins; i++)
         {
-            // as i progresses from 0 to numberOfBins - 1, offsetFactor will go from -1 to 1.
+            // as i progresses in [0, numberOfBins), offsetFactor will progress in [-1, 1].
             var offsetFactor = (double)i / (numberOfBins - 1) * 2 - 1;
             var offset = standardBinSize * (1 - skew) * offsetFactor;
             binSizes[i] = standardBinSize - (int)offset;
         }
 
-        // ensures that the binSizes accounts for the exact number of pixels that need a color.
+        // ensures that binSizes accounts for the exact number of pixels that need a color.
         binSizes[0] += count - binSizes.Sum() - 1;
 
         var thresholdId = 0;

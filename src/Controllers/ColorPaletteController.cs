@@ -1,9 +1,7 @@
 using Mandelbrot.src.Dtos;
 using Mandelbrot.src.ExtensionMethods;
-using Mandelbrot.src.Model;
 using Mandelbrot.src.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 
 namespace Mandelbrot.src.Controllers;

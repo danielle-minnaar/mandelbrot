@@ -25,6 +25,21 @@ public class PaletteRepository : IPaletteRepository
     }
 
     /// <inheritdoc/>
+    public async Task<ColorPalette> GetMostRecent()
+    {
+        var palettes = await Read();
+        var palette = palettes
+            .OrderByDescending(palette => palette.LastUseTime)
+            .FirstOrDefault()
+            ?? throw new NullReferenceException(
+                $"No color palattes in db at: {_settings.ColorPaletteDbLocation}");
+        
+        palette.LastUseTime = DateTime.Now;
+        await Update(palette);
+        return palette;
+    }
+
+    /// <inheritdoc/>
     public async Task<ColorPalette[]> GetAll()
     {
         var palettes = await Read();
@@ -85,7 +100,8 @@ public class PaletteRepository : IPaletteRepository
         var colorsPath = $"{_settings.ColorsLocation}/{item.Name}.png";
         if (!File.Exists(colorsPath))
         {
-            var m = $"When trying to create color palette with name: {item.Name}, could not find colors file: {colorsPath}";
+            var m = $"When trying to create color palette with name: {item.Name}";
+            m += $", could not find colors file: {colorsPath}";
             throw new FileNotFoundException(m);
         }
 

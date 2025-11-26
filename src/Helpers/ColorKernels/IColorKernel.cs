@@ -1,4 +1,5 @@
 using System.Drawing;
+using Mandelbrot.src.Helpers.ColorKernels.Implementations;
 
 namespace Mandelbrot.src.Helpers.ColorKernels;
 
@@ -6,14 +7,14 @@ namespace Mandelbrot.src.Helpers.ColorKernels;
 ///     Interface for coloring kernels.
 /// </summary>
 /// <remarks>
-///     The kernels hold the raw data that they are applied to themselves.
+///     Needs to be created by <see cref="KernelFactory"/> for safe instantiation!
 /// </remarks>
 public interface IColorKernel
 {
     /// <summary>
     ///     Contains the type of coloring that this kernel uses.
     /// </summary>
-    ColorKernelType Type { get; init; }
+    ColorType Type { get; init; }
 
     /// <summary>
     ///     Apply this kernel to the given x and y coordinates.

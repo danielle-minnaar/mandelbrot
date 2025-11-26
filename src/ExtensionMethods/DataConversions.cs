@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using Mandelbrot.src.Helpers.ColorKernels;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
 
@@ -57,5 +58,37 @@ public static class DataConversions
             ColorTime = colorTime,
             IterationData = iterationData
         };
+    }
+
+    /// <summary>
+    ///     Determines if this <see cref="ColorType"/> is continuous or not.
+    /// </summary>
+    /// <remarks>
+    ///     Continous <see cref="ColorType"/>s need to have escape speed calculated as well.
+    /// </remarks>
+    /// <param name="type">
+    ///     The relevant <see cref="ColorType"/>.
+    /// </param>
+    /// <returns>
+    ///     <c>true</c> if this <see cref="ColorType"/> is continuous,
+    ///     otherwise <c>false</c>.
+    /// </returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static bool IsContinuous(this ColorType type)
+    {
+        var dict = new Dictionary<ColorType, bool>()
+        {
+            { ColorType.Banded, false },
+            { ColorType.Continuous, true },
+            { ColorType.Dithered, true}
+        };
+
+        var isSuccessful = dict.TryGetValue(type, out var result);
+        if (!isSuccessful)
+        {
+            throw new ArgumentException($"No corresponding kernel registered for type: {type}");
+        }
+
+        return result;
     }
 }

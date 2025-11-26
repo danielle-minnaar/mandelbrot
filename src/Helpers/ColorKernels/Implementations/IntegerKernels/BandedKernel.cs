@@ -23,8 +23,8 @@ public class BandedKernel : KernelBase
     /// </param>
     public BandedKernel(
         IterationData iterData,
-        Color[] colorPalette)
-        : base(iterData, colorPalette, ColorKernelType.Banded)
+        ColorPalette colorPalette)
+        : base(iterData, colorPalette, ColorType.Banded)
     {
         _iterations = iterData.Iterations;
         
@@ -53,11 +53,11 @@ public class BandedKernel : KernelBase
         }
 
         var scaledIteration = iteration - _minIterations + 1;
-        var slope = 2d / _colorPalette.Length;
+        var slope = 2d / _palette.Colors.Length;
         var divisor = 1 + Math.Pow(Math.E, -1 * slope * scaledIteration);
-        var colorId = (2 / divisor - 1) * _colorPalette.Length;
-        colorId = Math.Min(colorId, _colorPalette.Length - 1);
+        var colorId = (2 / divisor - 1) * _palette.Colors.Length;
+        colorId = Math.Min(colorId, _palette.Colors.Length - 1);
 
-        return _colorPalette[(int)colorId];
+        return _palette.Colors[(int)colorId];
     }
 }

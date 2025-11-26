@@ -3,67 +3,29 @@ using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Helpers;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
+using Mandelbrot.src.Singletons;
+using Microsoft.Extensions.Options;
 
-namespace Mandelbrot.src.Generators;
+namespace Mandelbrot.src.Services.Implementations;
 
-/// <summary>
-///     Class that calculates how quicky a point in
-///     the complex plane escapes a bound value.
-/// </summary>
-public class Calculator
+public class CalculationService : ICalculationService
 {
-    private IterationData? _prevCalc;
-    private int _iterationFactor;
-    private int _continuousBound;
-    private int _initialIter;
+    private int iterFactor;
+    private int maxIter;
 
-    /// <summary>
-    ///     Initializes a new instance of the
-    ///     <see cref="Calculator"/> class.
-    /// </summary>
-    /// <param name="iterationFactor">
-    ///     The value of the max calculated iterations is based on the previous
-    ///     minimum iterations multiplied by this iteration factor.
-    /// </param>
-    /// <param name="continuousBound">
-    ///     The boundary selected if the image is continous.
-    /// </param>
-    /// <param name="initialIter">
-    ///     The max iterations for the first generated image.
-    /// </param>
-    /// <remarks>
-    ///     Higher values give greater image clarity, but slows down processing.
-    /// </remarks>
-    public Calculator(
-        int iterationFactor = 200,
-        int continuousBound = 2000,
-        int initialIter = 200)
+    public CalculationService(IOptions<AppSettings> options)
     {
-        _iterationFactor = iterationFactor;
-        _continuousBound = continuousBound;
-        _initialIter = initialIter;
+        iterFactor = options.Value.IterationFactor;
+        maxIter = options.Value.InitialIterations;
     }
 
-    /// <summary>
-    ///     Generates the iteration data based on the supplied parameters.
-    /// </summary>
-    /// <param name="spaceParam">
-    ///     The parameters that determine the scope of the data.
-    /// </param>
-    /// <param name="isContinuous">
-    ///     If true also calculate the escape speed.
-    ///     Slows down the calculation.
-    /// </param>
-    /// <returns></returns>
-    public IterationData GenerateIterationData(SpaceParam spaceParam, bool isContinuous)
+    public IterationData Calculate(SpaceParam spaceParam, bool isContinuous)
     {
         var loopParam = new LoopParam
         {
             SpaceParam = spaceParam,
-            Bound = isContinuous ? _continuousBound : 2,
-            MaxCalculatedIterations = _prevCalc is null
-                ? _initialIter
-                : _prevCalc.MinIterations * _iterationFactor,
+            Bound = isContinuous ? 2000 : 2,
+            MaxCalculatedIterations = maxIter,
             IsContinuous = isContinuous
         };
 
@@ -75,10 +37,11 @@ public class Calculator
             ;
 
         var result = builder.Build();
-        _prevCalc = result;
+        maxIter = result.MinIterations * iterFactor;
         return result;
     }
 
+    
     private (double[,]?, int[,]) ParallelLoop(LoopParam loopParam)
     {
         var spaceParam = loopParam.SpaceParam;
@@ -107,7 +70,7 @@ public class Calculator
         
         return (null, iterResult);
     }
-    
+
     private CalcResult CalculateIteration(CalcParam calcParam)
     {
         var z = new Complex(0, 0);
@@ -142,7 +105,7 @@ public class Calculator
         {
             Iterations = 0,
             EscapeSpeed = calcParam.isContinuous ? 0d : null
-        };
+        };        
     }
 
     private static Complex[,] GenerateInputSpace(SpaceParam spaceParam)
