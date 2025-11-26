@@ -21,10 +21,10 @@ public abstract class KernelBase : IColorKernel
     /// <summary>
     ///     The color palette that is used to color the image.
     /// </summary>
-    protected readonly Color[] _colorPalette;
+    protected readonly ColorPalette _palette;
 
     /// <inheritdoc/>
-    public ColorKernelType Type { get; init; }
+    public ColorType Type { get; init; }
 
     /// <summary>
     ///     Base constructor that all color kernels inherit.
@@ -32,18 +32,18 @@ public abstract class KernelBase : IColorKernel
     /// <param name="iterData">
     ///     The raw data that the kernel is applied to.
     /// </param>
-    /// <param name="colorPalete">
+    /// <param name="colorPalette">
     ///     The color palette that is used to color the image.
     /// </param>
     /// <param name="type">
     ///     Contains the type of coloring of this kernel.
     /// </param>
-    protected KernelBase(IterationData iterData, Color[] colorPalete, ColorKernelType type)
+    protected KernelBase(IterationData iterData, ColorPalette colorPalette, ColorType type)
     {
         Type = type;
         xSize = iterData.SpaceParam.XSize;
         ySize = iterData.SpaceParam.YSize;
-        _colorPalette = colorPalete;
+        _palette = colorPalette;
     }
     
     /// <inheritdoc/>

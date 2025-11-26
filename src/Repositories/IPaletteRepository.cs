@@ -8,6 +8,14 @@ namespace Mandelbrot.src.Repositories;
 public interface IPaletteRepository
 {
     /// <summary>
+    ///     Get the most recently used color palette.
+    /// </summary>
+    /// <returns>
+    ///     A color palette.
+    /// </returns>
+    Task<ColorPalette> GetMostRecent();
+    
+    /// <summary>
     ///     Get a color palette by name.
     /// </summary>
     /// <param name="name">
