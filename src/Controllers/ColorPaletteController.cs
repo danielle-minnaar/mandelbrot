@@ -50,7 +50,8 @@ public class ColorPaletteController : ControllerBase
     }
 
     /// <summary>
-    ///     Create a new color palette. There needs to already be a .png file of the colors whith the same name.
+    ///     Create a new color palette. There needs to already be a
+    ///     .png file of the colors whith the same name.
     /// </summary>
     /// <param name="palette">
     ///     The <see cref="ColorPalettePostDto"/> used to create the new color palette.

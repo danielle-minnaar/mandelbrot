@@ -8,17 +8,26 @@ using Microsoft.Extensions.Options;
 
 namespace Mandelbrot.src.Services.Implementations;
 
+/// <inheritdoc/>
 public class CalculationService : ICalculationService
 {
     private int iterFactor;
     private int maxIter;
+    private double progress = 0;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CalculationService"/> class.
+    /// </summary>
+    /// <param name="options">
+    ///     Contains the <see cref="AppSettings"/> that configures calculations. Supplied by DI.
+    /// </param>
     public CalculationService(IOptions<AppSettings> options)
     {
         iterFactor = options.Value.IterationFactor;
         maxIter = options.Value.InitialIterations;
     }
 
+    /// <inheritdoc/>
     public IterationData Calculate(SpaceParam spaceParam, bool isContinuous)
     {
         var loopParam = new LoopParam
@@ -37,10 +46,15 @@ public class CalculationService : ICalculationService
             ;
 
         var result = builder.Build();
-        maxIter = result.MinIterations * iterFactor;
+        maxIter = result.MaxIterations * iterFactor;
         return result;
     }
 
+    /// <inheritdoc/>
+    public double GetProgress()
+    {
+        return progress;
+    }
     
     private (double[,]?, int[,]) ParallelLoop(LoopParam loopParam)
     {
@@ -61,7 +75,11 @@ public class CalculationService : ICalculationService
                     speedResult[x, y] = (double)result.EscapeSpeed;
                 }
             });
+
+            progress = (1d + x) / spaceParam.XSize;
         }
+
+        progress = 0;
 
         if (loopParam.IsContinuous)
         {
@@ -126,7 +144,7 @@ public class CalculationService : ICalculationService
         for (int x = 0; x < xSize; x++)
         {
             var imaginary = yMin;
-            for (int y = 0; y < ySize; y++)
+            for (int y = ySize - 1; y >= 0; y--)
             {
                 result[x, y] = new Complex(real, imaginary);
                 imaginary += imaginaryStep;

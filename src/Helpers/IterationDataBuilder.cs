@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Mandelbrot.src.Generators;
 using Mandelbrot.src.Model.Parameters;
 using Mandelbrot.src.Model;
+using Mandelbrot.src.Services.Implementations;
 
 namespace Mandelbrot.src.Helpers;
 
@@ -15,7 +16,7 @@ public interface IBuilderStart
     ///     the <see cref="LoopParam"/> held by the builder.
     /// </summary>
     /// <param name="calculationLoop">
-    ///     The calculation should be defined in <see cref="Calculator"/>.
+    ///     The calculation should be defined in <see cref="CalculationService"/>.
     /// </param>
     /// <returns>
     ///     The next stage of the builder <see cref="IBuilderWithCalculationResult"/>.
