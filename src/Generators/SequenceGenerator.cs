@@ -1,3 +1,5 @@
+using Mandelbrot.src.Dtos;
+using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
 
@@ -38,11 +40,15 @@ public class SequenceGenerator
         _generatingFunction = generatingFunction;
 
         currentImageSize = _sequenceParam.StartingSize;
-        currentImageParam = new SpaceParam(
-            _sequenceParam.Center,
-            _sequenceParam.StartingSize,
-            _sequenceParam.XResolution,
-            _sequenceParam.YResolution);
+        currentImageParam = new SpaceDto
+        {
+            Center = _sequenceParam.Center,
+            XScale = _sequenceParam.StartingSize,
+            XResolution = _sequenceParam.XResolution,
+            YResolution = _sequenceParam.YResolution
+        }
+        .ToModel();
+
     }
 
     /// <summary>
@@ -64,11 +70,14 @@ public class SequenceGenerator
 
         currentImageSize *= _sequenceParam.ZoomFactor;
 
-        currentImageParam = new SpaceParam(
-            _sequenceParam.Center,
-            currentImageSize,
-            _sequenceParam.XResolution,
-            _sequenceParam.YResolution);
+        currentImageParam =  new SpaceDto
+        {
+            Center = _sequenceParam.Center,
+            XScale = currentImageSize,
+            XResolution = _sequenceParam.XResolution,
+            YResolution = _sequenceParam.YResolution
+        }
+        .ToModel();
 
         return currentImage;
     }

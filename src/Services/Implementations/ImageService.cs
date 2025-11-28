@@ -1,4 +1,6 @@
 using System.Drawing;
+using System.Threading.Tasks;
+using Mandelbrot.src.Exceptions;
 using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Helpers.ColorKernels;
 using Mandelbrot.src.Helpers.ColorKernels.Implementations;
@@ -13,6 +15,9 @@ public class ImageService : IImageService
 {
     private readonly IPaletteRepository _palettes;
     private readonly ICalculationService _calculation;
+
+    private bool isBusy = false;
+    private BrotImage? currentImage;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="ImageService"/> class.
@@ -30,15 +35,73 @@ public class ImageService : IImageService
     }
 
     /// <inheritdoc/>
-    public async Task<BrotImage> GetImage(SpaceParam inputParam)
+    public async Task GenerateImage(SpaceParam inputParam)
     {
-        var currentPalette = await _palettes.GetMostRecent();
-        var colorType = ColorType.Continuous;
+        if (isBusy)
+        {
+            var progressPercent =(int) GetProgress() * 100;
+            var m = "Can't execute two generations at the same time";
+            m += $", current generartion is at: {progressPercent}%";
+            throw new InOperationException(m);
+        }
 
-        var iterData = _calculation.Calculate(inputParam, colorType.IsContinuous());
+        try
+        {
+            isBusy = true;
+            
+            var isCon = ColorType.Continuous.IsContinuous();
+            var iterData = _calculation.Calculate(inputParam, isCon);
+            currentImage = await GetColorImage(iterData);
+            
+            isBusy = false;
+        }
+        catch (Exception)
+        {
+            isBusy = false;
+            throw;
+        }
+        
+    }
+
+    /// <inheritdoc/>
+    public BrotImage GetImage()
+    {
+        if (currentImage is null)
+        {
+            var m = "An image has not been generated yet";
+            var progressPercent =(int) _calculation.GetProgress() * 100;
+            m += _calculation.GetProgress() == 0
+                ? " and an image is not currently being generated."
+                : $", but an image is currently being generated. Calulation is at: {progressPercent}%";
+
+            throw new NullReferenceException(m);
+        }
+
+        return currentImage;
+    }
+
+    /// <inheritdoc/>
+    public async Task<BrotImage> GetRecoloredImage()
+    {
+        var iterData = GetImage().IterationData;
+        return await GetColorImage(iterData);
+    }
+
+    /// <inheritdoc/>
+    public double GetProgress()
+    {
+        return _calculation.GetProgress();
+    }
+
+    private async Task<BrotImage> GetColorImage(IterationData iterData)
+    {
+        var colorType = ColorType.Continuous;
+        var currentPalette = await _palettes.GetMostRecent();
+
         var kernel = KernelFactory.Create(colorType, iterData, currentPalette);
         var (image, colorTime) = Looper(kernel);
-        return iterData.ToBrotImage(image, colorTime);
+        
+        return iterData.ToBrotImage(image, colorTime);        
     }
 
     /// <summary>

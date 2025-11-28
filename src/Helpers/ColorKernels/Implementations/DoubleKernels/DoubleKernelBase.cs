@@ -27,9 +27,6 @@ public abstract class DoubleKernelBase : KernelBase
     /// <param name="palette">
     ///     The color palette.
     /// </param>
-    /// <param name="colorSkew">
-    ///     The skew in color.
-    /// </param>
     /// <param name="type">
     ///     The type of coloring.
     /// </param>
