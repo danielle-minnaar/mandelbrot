@@ -110,6 +110,10 @@ public class PaletteRepository : IPaletteRepository
         await Write(palettes);
     }
 
+    /// <summary>
+    ///     Read all entries from DB.
+    /// </summary>
+    /// <exception cref="FileNotFoundException"></exception>
     private async Task<List<ColorPalette>> Read()
     {
         var jsonPalettes = string.Empty;
@@ -141,6 +145,13 @@ public class PaletteRepository : IPaletteRepository
         return palettes;
     }
 
+    /// <summary>
+    ///     Write all entries to DB.
+    /// </summary>
+    /// <param name="palettes">
+    ///     The entries to be written.
+    /// </param>
+    /// <exception cref="FileNotFoundException"></exception>
     private async Task Write(List<ColorPalette> palettes)
     {
         string palettesJson = JsonConvert.SerializeObject(palettes);

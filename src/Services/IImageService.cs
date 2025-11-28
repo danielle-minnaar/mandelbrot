@@ -18,7 +18,7 @@ public interface IImageService
     ///     that the image occupies.
     /// </param>
     /// <exception cref="InOperationException"></exception>
-    Task GenerateImage(SpaceParam inputParam);
+    void GenerateImage(SpaceParam inputParam);
 
     /// <summary>
     ///     Get the most recently generated Mandelbrot image.
@@ -36,7 +36,7 @@ public interface IImageService
     /// <returns>
     ///     The newly generated <see cref="BrotImage"/>.
     /// </returns>
-    Task<BrotImage> GetRecoloredImage();
+    BrotImage GetRecoloredImage();
 
     /// <summary>
     ///     Get the progress on generation of the current image.

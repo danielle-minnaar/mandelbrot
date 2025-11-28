@@ -13,6 +13,8 @@ public interface IPaletteRepository
     /// <returns>
     ///     A color palette.
     /// </returns>
+    /// <exception cref="NullReferenceException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
     Task<ColorPalette> GetMostRecent();
     
     /// <summary>
@@ -24,6 +26,8 @@ public interface IPaletteRepository
     /// <returns>
     ///     A color palette
     /// </returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="NullReferenceException"></exception>
     Task<ColorPalette> GetByName(string name);
     
     /// <summary>
@@ -32,6 +36,7 @@ public interface IPaletteRepository
     /// <returns>
     ///     An array of color palettes.
     /// </returns>
+    /// <exception cref="FileNotFoundException"></exception>
     Task<ColorPalette[]> GetAll();
     
     /// <summary>
@@ -40,6 +45,8 @@ public interface IPaletteRepository
     /// <returns>
     ///     A color palette.
     /// </returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="NullReferenceException"></exception>
     Task<ColorPalette> GetById(Guid id);
     
     /// <summary>
@@ -48,6 +55,8 @@ public interface IPaletteRepository
     /// <param name="item">
     ///     The color palette with updated fields.
     /// </param>
+    /// <exception cref="NullReferenceException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
     Task Update(ColorPalette item);
 
     /// <summary>
@@ -56,5 +65,6 @@ public interface IPaletteRepository
     /// <param name="item">
     ///     The new color palette
     /// </param>
+    /// <exception cref="FileNotFoundException"></exception>
     Task CreateItem(ColorPalette item);
 }

@@ -39,11 +39,11 @@ public class ImageController : ControllerBase
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<string>> GenerateImage([FromBody] SpaceDto spaceOfImage)
+    public ActionResult<string> GenerateImage([FromBody] SpaceDto spaceOfImage)
     {
         try
         {
-            await _images.GenerateImage(spaceOfImage.ToModel());
+            _images.GenerateImage(spaceOfImage.ToModel());
             return Created();
         }
         catch (ArgumentException e)
@@ -87,6 +87,27 @@ public class ImageController : ControllerBase
         try
         {
             var result = _images.GetImage();
+            return File(result.Image.ToByteArray(), "image/png");
+        }
+        catch (NullReferenceException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    /// <summary>
+    ///     Recolor and retrieve an image based on the
+    ///     most recently generated iteration data.
+    /// </summary>
+    [HttpPut()]
+    [Produces("image/png")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public ActionResult GetRecoloredImage()
+    {
+        try
+        {
+            var result = _images.GetRecoloredImage();
             return File(result.Image.ToByteArray(), "image/png");
         }
         catch (NullReferenceException e)
