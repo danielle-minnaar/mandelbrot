@@ -150,7 +150,7 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
         {
             SpaceParam = _loopParam.SpaceParam,
             Bound = _loopParam.Bound,
-            MaxCalculatedIterations = _loopParam.Bound,
+            MaxCalculatedIterations = _loopParam.MaxCalculatedIterations,
             IsContinuous = _loopParam.IsContinuous,
             Iterations = _iterResult,
             EscapeSpeeds = _speedResult,

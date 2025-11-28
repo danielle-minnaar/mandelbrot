@@ -1,5 +1,6 @@
-using System.Drawing.Imaging;
+using Mandelbrot.src.Dtos;
 using Mandelbrot.src.Helpers.ColorKernels;
+using Mandelbrot.src.Model;
 
 namespace Mandelbrot.src.Services;
 
@@ -20,11 +21,21 @@ public interface IPaletteService
     ColorType ColorType { get; }
 
     /// <summary>
+    ///     Asynchronously initializes this instance of
+    ///     <see cref="IPaletteService"/>.
+    /// </summary>
+    /// <exception cref="NullReferenceException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
+    Task InitializeAsync();
+
+    /// <summary>
     ///     Select a new <see cref="ColorPalette"/> to be the active color palette.
     /// </summary>
     /// <param name="paletteName">
     ///     The name of the new <see cref="ColorPalette"/>.
     /// </param>
+    /// <exception cref="NullReferenceException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
     Task ChangePalette(string paletteName);
 
     /// <summary>
@@ -35,7 +46,7 @@ public interface IPaletteService
     ///     The new type of coloring.
     /// </param>
     void ChangeColorType(ColorType newType);
-    
+
     /// <summary>
     ///     Change one or both of dither ratio and color skew
     ///     on the active <see cref="Helpers.ColorKernels.ColorType"/>.
@@ -43,18 +54,18 @@ public interface IPaletteService
     /// <remarks>
     ///     A value of <c>null</c> leaves the variable unchanged.
     /// </remarks>
-    /// <param name="newDither">
-    ///     The new value of the dither ratio. Should be in range (0, 1].
+    /// <param name="newValues">
+    ///     Contains the new values.
     /// </param>
-    /// <param name="newSkew">
-    ///     The new value of the color skew. Should be in range [0, 1].
-    /// </param>
-    void NewVariables(double? newDither, double? newSkew);
+    /// <exception cref="ArgumentException"></exception>
+    void UpdatePalette(ColorPalettePatchDto newValues);
     
     /// <summary>
     ///     Save any changes made to the <see cref="Helpers.ColorKernels.ColorType"/>
     ///     that is active to the db.
     /// </summary>
+    /// <exception cref="NullReferenceException"></exception>
+    /// <exception cref="FileNotFoundException"></exception>
     Task SavePalette();
 
 }

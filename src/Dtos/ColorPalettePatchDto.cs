@@ -3,18 +3,12 @@ using Newtonsoft.Json;
 namespace Mandelbrot.src.Dtos;
 
 /// <summary>
-///     A dto containing the required fields to create a new color palette.
+///     A dto containing optional fields for modifying the active color palette.
 /// </summary>
-public record ColorPalettePostDto
+public record ColorPalettePatchDto
 {
     /// <summary>
-    ///     The name of the new color palette.
-    /// </summary>
-    [JsonProperty("name")]
-    public required string Name { get; set; }
-    
-    /// <summary>
-    ///     The color skew of the new color palette, which
+    ///     The new color skew of the active color palette, which
     ///     determines the relative sizes of different colors.
     ///     <para>
     ///     A value of 1 means all colors are represented equally.
@@ -23,19 +17,19 @@ public record ColorPalettePostDto
     ///     All other colors are sacel linearly.
     ///     </para>
     ///     <para>
-    ///     Value needs to be in range (0, 1]. Default value is 1.
+    ///     Value needs to be in range (0, 1]. Default value is null.
     ///     </para>
     /// </summary>
     [JsonProperty("color_skew")]
-    public required double ColorSkew { get; set; } = 1;
+    public double? ColorSkew { get; set; }
     
     /// <summary>
-    ///     The dither ratio of the new color palette, which
+    ///     The new dither ratio of the active color palette, which
     ///     determines the relative size of the area that is affected by dithering.
     ///     <para>
-    ///     Value needs to be range [0, 1]. Default value is 0.
+    ///     Value needs to be range [0, 1]. Default value is null.
     ///     </para>
     /// </summary>
     [JsonProperty("dither_ratio")]
-    public required double DitherRatio { get; set; } = 0;
+    public double? DitherRatio { get; set; }
 }

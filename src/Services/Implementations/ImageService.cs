@@ -1,19 +1,17 @@
 using System.Drawing;
-using System.Threading.Tasks;
 using Mandelbrot.src.Exceptions;
 using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Helpers.ColorKernels;
 using Mandelbrot.src.Helpers.ColorKernels.Implementations;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
-using Mandelbrot.src.Repositories;
 
 namespace Mandelbrot.src.Services.Implementations;
 
 /// <inheritdoc/>
 public class ImageService : IImageService
 {
-    private readonly IPaletteRepository _palettes;
+    private readonly IPaletteService _palettes;
     private readonly ICalculationService _calculation;
 
     private bool isBusy = false;
@@ -23,19 +21,19 @@ public class ImageService : IImageService
     ///     Initializes a new instance of the <see cref="ImageService"/> class.
     /// </summary>
     /// <param name="palettes">
-    ///     The <see cref="IPaletteRepository"/>, supplied by DI.
+    ///     The <see cref="IPaletteService"/>, supplied by DI.
     /// </param>
     /// <param name="calculation">
     ///     The <see cref="ICalculationService"/>, supplied by DI.
     /// </param>
-    public ImageService(IPaletteRepository palettes, ICalculationService calculation)
+    public ImageService(IPaletteService palettes, ICalculationService calculation)
     {
         _palettes = palettes;
         _calculation = calculation;
     }
 
     /// <inheritdoc/>
-    public async Task GenerateImage(SpaceParam inputParam)
+    public void GenerateImage(SpaceParam inputParam)
     {
         if (isBusy)
         {
@@ -49,9 +47,9 @@ public class ImageService : IImageService
         {
             isBusy = true;
             
-            var isCon = ColorType.Continuous.IsContinuous();
+            var isCon = _palettes.ColorType.IsContinuous();
             var iterData = _calculation.Calculate(inputParam, isCon);
-            currentImage = await GetColorImage(iterData);
+            currentImage = GetColorImage(iterData);
             
             isBusy = false;
         }
@@ -81,10 +79,10 @@ public class ImageService : IImageService
     }
 
     /// <inheritdoc/>
-    public async Task<BrotImage> GetRecoloredImage()
+    public BrotImage GetRecoloredImage()
     {
         var iterData = GetImage().IterationData;
-        return await GetColorImage(iterData);
+        return GetColorImage(iterData);
     }
 
     /// <inheritdoc/>
@@ -93,10 +91,10 @@ public class ImageService : IImageService
         return _calculation.GetProgress();
     }
 
-    private async Task<BrotImage> GetColorImage(IterationData iterData)
+    private BrotImage GetColorImage(IterationData iterData)
     {
-        var colorType = ColorType.Continuous;
-        var currentPalette = await _palettes.GetMostRecent();
+        var colorType = _palettes.ColorType;
+        var currentPalette = _palettes.CurrentPalette;
 
         var kernel = KernelFactory.Create(colorType, iterData, currentPalette);
         var (image, colorTime) = Looper(kernel);

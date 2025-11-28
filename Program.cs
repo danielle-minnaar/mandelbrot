@@ -24,11 +24,15 @@ services.AddControllers().AddNewtonsoftJson();
 services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 services.AddSingleton<IPaletteRepository, PaletteRepository>();
-
+services.AddSingleton<IPaletteService, PaletteService>();
 services.AddSingleton<ICalculationService, CalculationService>();
 services.AddSingleton<IImageService, ImageService>();
 
 var app = builder.Build();
+
+var provider = app.Services;
+var service = provider.GetRequiredService<IPaletteService>();
+await service.InitializeAsync();
 
 if (app.Environment.IsDevelopment())
 {
