@@ -7,6 +7,14 @@ using Mandelbrot.src.Singletons;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
+services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy => policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders("Location"));
+});
 
 services.AddEndpointsApiExplorer();
 
@@ -41,6 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+app.UseCors("AllowAngularApp");
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");

@@ -121,13 +121,20 @@ public class IterationDataBuilder : IBuilderStart, IBuilderWithCalculationResult
 
         var queryable = _iterResult.Cast<int>();
 
-        _maxIterations = queryable
-            .Where(result => result != 0)
-            .Max();
+        try 
+        {
+            _maxIterations = queryable
+                .Where(result => result != 0)
+                .Max();
 
-        _minIterations = queryable
-            .Where(result => result != 0)
-            .Min();
+            _minIterations = queryable
+                .Where(result => result != 0)
+                .Min();
+        } catch (InvalidOperationException)
+        {
+            _maxIterations = 1;
+            _minIterations = 1;
+        }
 
         _pointsInFractal = queryable
             .Where(result => result == 0)
