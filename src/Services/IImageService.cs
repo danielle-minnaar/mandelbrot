@@ -18,7 +18,19 @@ public interface IImageService
     ///     that the image occupies.
     /// </param>
     /// <exception cref="InOperationException"></exception>
-    void GenerateImage(SpaceParam inputParam);
+    Guid GenerateImage(SpaceParam inputParam);
+
+    /// <summary>
+    ///     Get the image with specified id.
+    /// </summary>
+    /// <param name="imGuid">
+    ///     The id of the image.
+    /// </param>
+    /// <returns>
+    ///     The <see cref="BrotImage"/> with specified id.
+    /// </returns>
+    /// <exception cref="NullReferenceException"></exception>
+    BrotImage GetImage(Guid imGuid);
 
     /// <summary>
     ///     Get the most recently generated Mandelbrot image.

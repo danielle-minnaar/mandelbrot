@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Net.Http.Headers;
 using Mandelbrot.src.Exceptions;
 using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Helpers.ColorKernels;
@@ -16,6 +17,7 @@ public class ImageService : IImageService
 
     private bool isBusy = false;
     private BrotImage? currentImage;
+    private Dictionary<Guid, BrotImage> images = new Dictionary<Guid, BrotImage>();
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="ImageService"/> class.
@@ -33,7 +35,7 @@ public class ImageService : IImageService
     }
 
     /// <inheritdoc/>
-    public void GenerateImage(SpaceParam inputParam)
+    public Guid GenerateImage(SpaceParam inputParam)
     {
         if (isBusy)
         {
@@ -46,12 +48,18 @@ public class ImageService : IImageService
         try
         {
             isBusy = true;
+
+            var imGuid = Guid.NewGuid();
             
             var isCon = _palettes.ColorType.IsContinuous();
             var iterData = _calculation.Calculate(inputParam, isCon);
             currentImage = GetColorImage(iterData);
+
+            images.Add(imGuid, currentImage);
             
             isBusy = false;
+
+            return imGuid;
         }
         catch (Exception)
         {
@@ -59,6 +67,18 @@ public class ImageService : IImageService
             throw;
         }
         
+    }
+
+    /// <inheritdoc/>
+    public BrotImage GetImage(Guid imguid)
+    {
+        var result = images.GetValueOrDefault(imguid);
+        if (result == null)
+        {
+            var m = $"Could not find an image with Guid: {imguid}";
+            throw new NullReferenceException(m);
+        }
+        return result;
     }
 
     /// <inheritdoc/>

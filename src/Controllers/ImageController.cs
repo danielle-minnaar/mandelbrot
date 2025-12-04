@@ -35,16 +35,18 @@ public class ImageController : ControllerBase
     ///     The spatial parameter of the image.
     /// </param>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status202Accepted)]
     [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<string>(StatusCodes.Status409Conflict)]
     public ActionResult<string> GenerateImage([FromBody] SpaceDto spaceOfImage)
     {
+        Console.WriteLine(spaceOfImage);
         try
         {
-            _images.GenerateImage(spaceOfImage.ToModel());
-            return Created();
+            var resultId = _images.GenerateImage(spaceOfImage.ToModel());
+            var locationUrl = Url.Action(nameof(GetImage), new {imGuid = resultId});
+            return Accepted(locationUrl);
         }
         catch (ArgumentException e)
         {
@@ -87,6 +89,29 @@ public class ImageController : ControllerBase
         try
         {
             var result = _images.GetImage();
+            return File(result.Image.ToByteArray(), "image/png");
+        }
+        catch (NullReferenceException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve an image with a specific id.
+    /// </summary>
+    /// <param name="imGuid">
+    ///     The id of the image.
+    /// </param>
+    [HttpGet("{imGuid}")]
+    [Produces("image/png")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileResult))]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public ActionResult GetImage(Guid imGuid)
+    {
+        try
+        {
+            var result = _images.GetImage(imGuid);
             return File(result.Image.ToByteArray(), "image/png");
         }
         catch (NullReferenceException e)

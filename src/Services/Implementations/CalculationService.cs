@@ -46,7 +46,7 @@ public class CalculationService : ICalculationService
             ;
 
         var result = builder.Build();
-        maxIter = result.MaxIterations * iterFactor;
+        maxIter = result.MinIterations * iterFactor;
         return result;
     }
 
@@ -128,12 +128,9 @@ public class CalculationService : ICalculationService
 
     private static Complex[,] GenerateInputSpace(SpaceParam spaceParam)
     {
-        var xMin = spaceParam.XMin;
-        var xMax = spaceParam.XMax;
-        var yMin = spaceParam.YMin;
-        var yMax = spaceParam.YMax;
-        var xSize = spaceParam.XSize;
-        var ySize = spaceParam.YSize;
+        var unpacker = (SpaceParam s) =>
+            (s.XMin, s.XMax, s.YMin, s.YMax, s.XSize, s.YSize);
+        var (xMin, xMax, yMin, yMax, xSize, ySize) = unpacker(spaceParam);
 
         var result = new Complex[xSize, ySize];
         
