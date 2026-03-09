@@ -68,8 +68,7 @@ public class PaletteRepository : IPaletteRepository
     {
         var palettes = await Read();
         var palette = palettes
-            .Where(palette => palette.Name == name)
-            .FirstOrDefault()
+            .FirstOrDefault(palette => palette.Name == name)
             ?? throw new NullReferenceException($"Color palette with name: {name} not found.");
 
         return palette;
