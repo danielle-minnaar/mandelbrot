@@ -9,23 +9,17 @@ using Microsoft.Extensions.Options;
 namespace Mandelbrot.src.Services.Implementations;
 
 /// <inheritdoc/>
-public class CalculationService : ICalculationService
+/// <summary>
+///     Initializes a new instance of the <see cref="CalculationService"/> class.
+/// </summary>
+/// <param name="options">
+///     Contains the <see cref="AppSettings"/> that configures calculations. Supplied by DI.
+/// </param>
+public class CalculationService(IOptions<AppSettings> options) : ICalculationService
 {
-    private int iterFactor;
-    private int maxIter;
+    private int iterFactor = options.Value.IterationFactor;
+    private int maxIter = options.Value.InitialIterations;
     private double progress = 0;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="CalculationService"/> class.
-    /// </summary>
-    /// <param name="options">
-    ///     Contains the <see cref="AppSettings"/> that configures calculations. Supplied by DI.
-    /// </param>
-    public CalculationService(IOptions<AppSettings> options)
-    {
-        iterFactor = options.Value.IterationFactor;
-        maxIter = options.Value.InitialIterations;
-    }
 
     /// <inheritdoc/>
     public IterationData Calculate(SpaceParam spaceParam, bool isContinuous)

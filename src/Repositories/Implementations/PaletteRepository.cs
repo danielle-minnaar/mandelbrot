@@ -9,20 +9,15 @@ namespace Mandelbrot.src.Repositories.Implementations;
 /// <summary>
 ///     The repository of <see cref="ColorPalette"/> objects.
 /// </summary>
-public class PaletteRepository : IPaletteRepository
+/// <remarks>
+///     Initializes a new instance of the <see cref="PaletteRepository"/> class.
+/// </remarks>
+/// <param name="options">
+///     The <see cref="AppSettings"/> that should be handled by dependency injection.
+/// </param>
+public class PaletteRepository(IOptions<AppSettings> options) : IPaletteRepository
 {
-    private readonly AppSettings _settings;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="PaletteRepository"/> class.
-    /// </summary>
-    /// <param name="options">
-    ///     The <see cref="AppSettings"/> that should be handled by dependency injection.
-    /// </param>
-    public PaletteRepository(IOptions<AppSettings> options)
-    {
-        _settings = options.Value;
-    }
+    private readonly AppSettings _settings = options.Value;
 
     /// <inheritdoc/>
     public async Task<ColorPalette> GetMostRecent()

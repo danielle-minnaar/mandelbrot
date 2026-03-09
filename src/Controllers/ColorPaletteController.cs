@@ -12,29 +12,23 @@ namespace Mandelbrot.src.Controllers;
 /// <summary>
 ///     Controller for managing color palettes
 /// </summary>
+/// <remarks>
+///     Initializes a new instance of the <see cref="ColorPaletteController"/> class.
+/// </remarks>
+/// <param name="colorPalettes">
+///     The color palettes repository, should be handled by DI.
+/// </param>
+/// <param name="activePalette">
+///     The color palette service, should be handled by DI.
+/// </param>
 [ApiController]
 [Route("api/colorpalettes")]
-public class ColorPaletteController : ControllerBase
+public class ColorPaletteController(
+    IPaletteRepository colorPalettes,
+    IPaletteService activePalette) : ControllerBase
 {
-    private readonly IPaletteRepository _colorPalettes;
-    private readonly IPaletteService _activePalette;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ColorPaletteController"/> class.
-    /// </summary>
-    /// <param name="colorPalettes">
-    ///     The color palettes repository, should be handled by DI.
-    /// </param>
-    /// <param name="activePalette">
-    ///     The color palette service, should be handled by DI.
-    /// </param>
-    public ColorPaletteController(
-        IPaletteRepository colorPalettes,
-        IPaletteService activePalette)
-    {
-        _colorPalettes = colorPalettes;
-        _activePalette = activePalette;
-    }
+    private readonly IPaletteRepository _colorPalettes = colorPalettes;
+    private readonly IPaletteService _activePalette = activePalette;
 
     /// <summary>
     ///     Set the currently active color palette by name.

@@ -6,18 +6,16 @@ namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.DoubleKernels;
 /// <summary>
 ///     The kernel that aplies continuous coloring.
 /// </summary>
-public class ContinuousKernel : DoubleKernelBase
+/// <remarks>
+///     The constructor.
+/// </remarks>
+/// <param name="iterData">The data.</param>
+/// <param name="palette">The colors.</param>
+public class ContinuousKernel(
+    IterationData iterData,
+    ColorPalette palette) : DoubleKernelBase(iterData, palette, ColorType.Continuous)
 {
-    /// <summary>
-    ///     The constructor.
-    /// </summary>
-    /// <param name="iterData">The data.</param>
-    /// <param name="palette">The colors.</param>
-    public ContinuousKernel(
-        IterationData iterData,
-        ColorPalette palette)
-        : base(iterData, palette, ColorType.Continuous) {}
-    
+
     /// <inheritdoc/>
     public override Color Apply(int x, int y)
     {

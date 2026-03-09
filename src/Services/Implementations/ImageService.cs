@@ -10,29 +10,23 @@ using Mandelbrot.src.Model.Parameters;
 namespace Mandelbrot.src.Services.Implementations;
 
 /// <inheritdoc/>
-public class ImageService : IImageService
+/// <summary>
+///     Initializes a new instance of the <see cref="ImageService"/> class.
+/// </summary>
+/// <param name="palettes">
+///     The <see cref="IPaletteService"/>, supplied by DI.
+/// </param>
+/// <param name="calculation">
+///     The <see cref="ICalculationService"/>, supplied by DI.
+/// </param>
+public class ImageService(IPaletteService palettes, ICalculationService calculation) : IImageService
 {
-    private readonly IPaletteService _palettes;
-    private readonly ICalculationService _calculation;
+    private readonly IPaletteService _palettes = palettes;
+    private readonly ICalculationService _calculation = calculation;
 
     private bool isBusy = false;
     private BrotImage? currentImage;
     private Dictionary<Guid, BrotImage> images = new Dictionary<Guid, BrotImage>();
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ImageService"/> class.
-    /// </summary>
-    /// <param name="palettes">
-    ///     The <see cref="IPaletteService"/>, supplied by DI.
-    /// </param>
-    /// <param name="calculation">
-    ///     The <see cref="ICalculationService"/>, supplied by DI.
-    /// </param>
-    public ImageService(IPaletteService palettes, ICalculationService calculation)
-    {
-        _palettes = palettes;
-        _calculation = calculation;
-    }
 
     /// <inheritdoc/>
     public Guid GenerateImage(SpaceParam inputParam)

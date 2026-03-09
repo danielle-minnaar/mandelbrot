@@ -8,7 +8,14 @@ using Mandelbrot.src.Repositories;
 namespace Mandelbrot.src.Services.Implementations;
 
 /// <inheritdoc/>
-public class PaletteService : IPaletteService
+/// <summary>
+///     Initializes a new instance of the
+///     <see cref="PaletteService"/> class.
+/// </summary>
+/// <param name="palettes">
+///     The palette repository, handled by DI.
+/// </param>
+public class PaletteService(IPaletteRepository palettes) : IPaletteService
 {
     /// <inheritdoc/>
     public ColorPalette CurrentPalette {
@@ -27,23 +34,10 @@ public class PaletteService : IPaletteService
         } }
 
     /// <inheritdoc/>
-    public ColorType ColorType { get; private set; }
+    public ColorType ColorType { get; private set; } = ColorType.Dithered;
 
-    private readonly IPaletteRepository _palettes;
+    private readonly IPaletteRepository _palettes = palettes;
     private ColorPalette? _currentPalette;
-
-    /// <summary>
-    ///     Initializes a new instance of the
-    ///     <see cref="PaletteService"/> class.
-    /// </summary>
-    /// <param name="palettes">
-    ///     The palette repository, handled by DI.
-    /// </param>
-    public PaletteService(IPaletteRepository palettes)
-    {
-        _palettes = palettes;
-        ColorType = ColorType.Dithered;
-    }
 
     /// <inheritdoc/>
     [MemberNotNull(nameof(_currentPalette))]

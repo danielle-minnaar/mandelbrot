@@ -9,20 +9,16 @@ namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.DoubleKernels;
 /// <remarks>
 ///     Best used for pixel art.
 /// </remarks>
-public class DitheredKernel : DoubleKernelBase
+/// <remarks>
+///     The constructor.
+/// </remarks>
+/// <param name="iterData">Raw data.</param>
+/// <param name="palette">The color palette.</param>
+public class DitheredKernel(
+    IterationData iterData,
+    ColorPalette palette) : DoubleKernelBase(iterData, palette, ColorType.Dithered)
 {
 
-    
-    /// <summary>
-    ///     The constructor.
-    /// </summary>
-    /// <param name="iterData">Raw data.</param>
-    /// <param name="palette">The color palette.</param>
-    public DitheredKernel(
-        IterationData iterData,
-        ColorPalette palette)
-        : base(iterData, palette, ColorType.Dithered) { }
-    
     /// <inheritdoc/>
     public override Color Apply(int x, int y)
     {

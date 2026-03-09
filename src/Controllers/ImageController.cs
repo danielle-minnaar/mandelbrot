@@ -9,23 +9,18 @@ namespace Mandelbrot.src.Controllers;
 /// <summary>
 ///     Controller for managing Mandelbrot images.
 /// </summary>
+/// <remarks>
+///     Initializes a new instance of the 
+///     <see cref="ImageController"/> class.
+/// </remarks>
+/// <param name="images">
+///     The <see cref="IImageService"/>, handled by DI.
+/// </param>
 [ApiController]
 [Route("api/images")]
-public class ImageController : ControllerBase
+public class ImageController(IImageService images) : ControllerBase
 {
-    private readonly IImageService _images;
-
-    /// <summary>
-    ///     Initializes a new instance of the 
-    ///     <see cref="ImageController"/> class.
-    /// </summary>
-    /// <param name="images">
-    ///     The <see cref="IImageService"/>, handled by DI.
-    /// </param>
-    public ImageController(IImageService images)
-    {
-        _images = images;
-    }
+    private readonly IImageService _images = images;
 
     /// <summary>
     ///     Starts the generation process on an image matching
