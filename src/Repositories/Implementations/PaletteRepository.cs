@@ -17,7 +17,7 @@ public class PaletteRepository : IPaletteRepository
     ///     Initializes a new instance of the <see cref="PaletteRepository"/> class.
     /// </summary>
     /// <param name="options">
-    ///     The <see cref="AppSettings"/> that should be handled by dependecy injection.
+    ///     The <see cref="AppSettings"/> that should be handled by dependency injection.
     /// </param>
     public PaletteRepository(IOptions<AppSettings> options)
     {
@@ -32,7 +32,7 @@ public class PaletteRepository : IPaletteRepository
             .OrderByDescending(palette => palette.LastUseTime)
             .FirstOrDefault()
             ?? throw new NullReferenceException(
-                $"No color palattes in db at: {_settings.ColorPaletteDbLocation}");
+                $"No color palettes in db at: {_settings.GetColorPaletteDbLocation()}");
         
         palette.LastUseTime = DateTime.Now;
         await Update(palette);
@@ -97,7 +97,7 @@ public class PaletteRepository : IPaletteRepository
         item.CreationTime = DateTime.Now;
         item.LastUseTime = DateTime.Now;
 
-        var colorsPath = $"{_settings.ColorsLocation}/{item.Name}.png";
+        var colorsPath = $"{_settings.GetColorsLocation()}/{item.Name}.png";
         if (!File.Exists(colorsPath))
         {
             var m = $"When trying to create color palette with name: {item.Name}";
@@ -117,7 +117,7 @@ public class PaletteRepository : IPaletteRepository
     private async Task<List<ColorPalette>> Read()
     {
         var jsonPalettes = string.Empty;
-        var docPath = _settings.ColorPaletteDbLocation;
+        var docPath = _settings.GetColorPaletteDbLocation();
         if (!File.Exists(docPath))
         {
             var m = $"While reading could not find the db at: {docPath}";
@@ -138,7 +138,7 @@ public class PaletteRepository : IPaletteRepository
         
         foreach (var palette in palettes)
         {
-            var colorPath = $"{_settings.ColorsLocation}/{palette.Name}.png";
+            var colorPath = $"{_settings.GetColorsLocation()}/{palette.Name}.png";
             palette.Colors = GetColors(colorPath);
         }
 
@@ -155,7 +155,7 @@ public class PaletteRepository : IPaletteRepository
     private async Task Write(List<ColorPalette> palettes)
     {
         string palettesJson = JsonConvert.SerializeObject(palettes);
-        string docPath = _settings.ColorPaletteDbLocation;
+        string docPath = _settings.GetColorPaletteDbLocation();
         if (!File.Exists(docPath))
         {
             var m = $"While writing could not find the db at: {docPath}";

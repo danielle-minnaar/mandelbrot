@@ -7,14 +7,20 @@ namespace Mandelbrot.src.Singletons;
 public class AppSettings
 {
     /// <summary>
-    ///     The name of the directory that holds all the png color palette files.
+    ///     An array that holds the location of the directory that holds all the png color palette files.
     /// </summary>
-    public required string ColorsLocation { get; set; }
+    /// <remarks>
+    ///     Use <see cref="GetColorsLocation"/> to get an execution context sensitive string.
+    /// </remarks>
+    public required string[] ColorsLocation { get; set; }
     
     /// <summary>
-    ///     The name of the json file that is the color palette db.
+    ///     An array that holds the relative path of the json file that is the color palette db.
     /// </summary>
-    public required string ColorPaletteDbLocation { get; set; }
+    /// <remarks>
+    ///     Use <see cref="GetColorPaletteDbLocation"/> to get an execution context sensitive string.
+    /// </remarks>
+    public required string[] ColorPaletteDbLocation { get; set; }
 
     /// <summary>
     ///     The number of iterations used for the first calculation.
@@ -26,4 +32,20 @@ public class AppSettings
     ///     relative to the minimum number of iterations of the previous calculation.
     /// </summary>
     public required int IterationFactor { get; set; }
+
+    /// <summary>
+    ///     Get the execution context sensitive location.
+    /// </summary>
+    public string GetColorsLocation()
+    {
+        return Path.Join(AppContext.BaseDirectory, Path.Join(ColorsLocation));
+    }
+
+    /// <summary>
+    ///     Get the execution context sensitive location.
+    /// </summary>
+    public string GetColorPaletteDbLocation()
+    {
+        return Path.Join(AppContext.BaseDirectory, Path.Join(ColorPaletteDbLocation));
+    }
 }
