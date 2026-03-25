@@ -52,7 +52,7 @@ app.MapControllers();
 
 app.UseCors("AllowAngularApp");
 
-// See https://aka.ms/new-console-template for more information
+// Sentimental support to soothe my sleepy soul.
 Console.WriteLine("Hello, World!");
 
 app.Run();
