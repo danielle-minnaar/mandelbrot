@@ -15,4 +15,8 @@ Currently the priority is to work on adapting the application so that it can run
   * The Colors in the ColorPaletteDtos
   * The Colors in the ColorKernels
 
-* Replace the json file based dbs with sql dbs hosted in a docker container.
+* Replace the json file based palette repository with sql dbs hosted in a docker container.
+
+* Create an ImageRepository to hold data on generated images.
+  * Create a docker based db for images.
+  * Remove image data holding element of ImageService.
