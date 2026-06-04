@@ -66,6 +66,9 @@ public class PaletteRepository(IOptions<AppSettings> options) : IPaletteReposito
             .FirstOrDefault(palette => palette.Name == name)
             ?? throw new NullReferenceException($"Color palette with name: {name} not found.");
 
+        palette.LastUseTime = DateTime.Now;
+        await Update(palette);
+
         return palette;
     }
 
