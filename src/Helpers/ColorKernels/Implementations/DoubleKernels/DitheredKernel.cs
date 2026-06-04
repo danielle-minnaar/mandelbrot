@@ -1,5 +1,5 @@
-using System.Drawing;
 using Mandelbrot.src.Model;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.DoubleKernels;
 
@@ -20,12 +20,12 @@ public class DitheredKernel(
 {
 
     /// <inheritdoc/>
-    public override Color Apply(int x, int y)
+    public override SKColor Apply(int x, int y)
     {
         var speed = _escapeSpeeds[x, y];
         if (speed == 0)
         {
-            return Color.Black;
+            return SKColor.FromHsv(h: 0, s: 0, v: 0);
         }
 
         var (colorId, idFraction) = GetFractionalColorId(speed);

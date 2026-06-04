@@ -1,5 +1,6 @@
 using System.Drawing;
 using Mandelbrot.src.Model;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.IntegerKernels;
 
@@ -43,13 +44,13 @@ public class BandedKernel : KernelBase
     }
 
     /// <inheritdoc/>
-    public override Color Apply(int x, int y)
+    public override SKColor Apply(int x, int y)
     {
         var iteration = _iterations[x, y];
 
         if (iteration == 0)
         {
-            return Color.Black;
+            return SKColor.FromHsv(h: 0, s: 0, v: 0);
         }
 
         var scaledIteration = iteration - _minIterations + 1;

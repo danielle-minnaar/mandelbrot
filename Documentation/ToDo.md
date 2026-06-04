@@ -11,7 +11,7 @@ Currently the priority is to work on adapting the application so that it can run
 * Replace System.Drawing with a linux compatible image library
   * The Bitmap in BrotImage
     * Add a dto conversion for BrotImage to create a byte array (currently this happens in the controller (!))
-  * The Colors in ColorPalette
+  * The Colors in ColorPalette (Working on this one!)
   * The Colors in the ColorPaletteDtos
   * The Colors in the ColorKernels
 

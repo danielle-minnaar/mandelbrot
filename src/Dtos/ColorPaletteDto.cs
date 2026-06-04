@@ -1,4 +1,4 @@
-using System.Drawing;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Dtos;
 
@@ -20,7 +20,7 @@ public record ColorPaletteDto
     /// <summary>
     ///     The colors in the palette.
     /// </summary>
-    public required Color[] Colors { get; set; }
+    public required SKColor[] Colors { get; set; }
     
 
     /// <summary>

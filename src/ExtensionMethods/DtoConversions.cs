@@ -1,7 +1,9 @@
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using Mandelbrot.src.Dtos;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
+using SkiaSharp;
 
 namespace Mandelbrot.src.ExtensionMethods;
 
@@ -10,6 +12,21 @@ namespace Mandelbrot.src.ExtensionMethods;
 /// </summary>
 public static class DtoConversions
 {
+
+    /// <summary>
+    ///     Extension method to convert this <see cref="BrotImage"/> into an array of png bytes.
+    /// </summary>
+    /// <param name="image">
+    ///     The <see cref="BrotImage"/> to be converted.
+    /// </param>
+    /// <returns>
+    ///     The png as represented in a byte array.
+    /// </returns>
+    public static byte[] ToPngBytes(this BrotImage image)
+    {
+        return image.Image.Encode(SKEncodedImageFormat.Png, 100).ToArray();
+    }
+
     /// <summary>
     ///     Extension method to convert this <see cref="ColorPalette"/> into a <see cref="ColorPaletteDto"/>.
     /// </summary>

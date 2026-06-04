@@ -1,5 +1,5 @@
-using System.Drawing;
 using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Model;
 
@@ -24,7 +24,7 @@ public class ColorPalette
     ///     An array of <c>Color</c> used for coloring.
     /// </summary>
     [JsonIgnore]
-    public Color[] Colors = [];
+    public SKColor[] Colors = [];
     
     /// <summary>
     ///     Determines the relative sizes of different colors.

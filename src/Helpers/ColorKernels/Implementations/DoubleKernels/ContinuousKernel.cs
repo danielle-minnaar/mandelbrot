@@ -1,5 +1,5 @@
-using System.Drawing;
 using Mandelbrot.src.Model;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.DoubleKernels;
 
@@ -17,13 +17,13 @@ public class ContinuousKernel(
 {
 
     /// <inheritdoc/>
-    public override Color Apply(int x, int y)
+    public override SKColor Apply(int x, int y)
     {
         var speed = _escapeSpeeds[x, y];
 
         if (speed == 0)
         {
-            return Color.Black;
+            return SKColor.FromHsv(h: 0, s: 0, v: 0);
         }
         
         var (colorId, idFraction) = GetFractionalColorId(speed);
@@ -34,11 +34,11 @@ public class ContinuousKernel(
         return LinearInterpolate(color1, color2, idFraction);
     }
 
-    private static Color LinearInterpolate(Color color1, Color color2, double fraction)
+    private static SKColor LinearInterpolate(SKColor color1, SKColor color2, double fraction)
     {
-        int R = (int)(color1.R + (color2.R - color1.R) * fraction);
-        int G = (int)(color1.G + (color2.G - color1.G) * fraction);
-        int B = (int)(color1.B + (color2.B - color1.B) * fraction);
-        return Color.FromArgb(R, G, B);
+        int R = (int)(color1.Red + (color2.Red - color1.Red) * fraction);
+        int G = (int)(color1.Green + (color2.Green - color1.Green) * fraction);
+        int B = (int)(color1.Blue + (color2.Blue - color1.Blue) * fraction);
+        return new SKColor((byte)R, (byte)G, (byte)B);
     }
 }

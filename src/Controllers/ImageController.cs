@@ -84,7 +84,7 @@ public class ImageController(IImageService images) : ControllerBase
         try
         {
             var result = _images.GetImage();
-            return File(result.Image.ToByteArray(), "image/png");
+            return File(result.ToPngBytes(), "image/png");
         }
         catch (NullReferenceException e)
         {
@@ -107,7 +107,7 @@ public class ImageController(IImageService images) : ControllerBase
         try
         {
             var result = _images.GetImage(imGuid);
-            return File(result.Image.ToByteArray(), "image/png");
+            return File(result.ToPngBytes(), "image/png");
         }
         catch (NullReferenceException e)
         {
@@ -128,7 +128,7 @@ public class ImageController(IImageService images) : ControllerBase
         try
         {
             var result = _images.GetRecoloredImage();
-            return File(result.Image.ToByteArray(), "image/png");
+            return File(result.ToPngBytes(), "image/png");
         }
         catch (NullReferenceException e)
         {

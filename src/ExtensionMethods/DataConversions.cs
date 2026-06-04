@@ -1,8 +1,8 @@
-using System.Drawing;
 using System.Numerics;
 using Mandelbrot.src.Helpers.ColorKernels;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
+using SkiaSharp;
 
 namespace Mandelbrot.src.ExtensionMethods;
 
@@ -50,7 +50,7 @@ public static class DataConversions
     /// <returns>
     ///     The completed <see cref="BrotImage"/>, including meta data.
     /// </returns>
-    public static BrotImage ToBrotImage(this IterationData iterationData, Bitmap image, TimeSpan colorTime)
+    public static BrotImage ToBrotImage(this IterationData iterationData, SKBitmap image, TimeSpan colorTime)
     {
         return new BrotImage
         {

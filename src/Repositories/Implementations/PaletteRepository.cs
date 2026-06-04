@@ -1,8 +1,8 @@
-using System.Drawing;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Singletons;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Repositories.Implementations;
 
@@ -136,7 +136,7 @@ public class PaletteRepository(IOptions<AppSettings> options) : IPaletteReposito
         foreach (var palette in palettes)
         {
             var colorPath = $"{_settings.GetColorsLocation()}/{palette.Name}.png";
-            palette.Colors = GetColors(colorPath);
+            palette.Colors = await GetColors(colorPath);
         }
 
         return palettes;
@@ -165,10 +165,11 @@ public class PaletteRepository(IOptions<AppSettings> options) : IPaletteReposito
         }
     }
 
-    private Color[] GetColors(string path)
+    private async Task<SKColor[]> GetColors(string path)
     {
-        var colors = new Bitmap(path) ?? throw new NullReferenceException($"Could not find a color file at: {path}");
-        var result = new Color[colors.Width];
+        var bytes = File.ReadAllBytes(path) ?? throw new NullReferenceException($"Could not find a color file at: {path}");
+        var colors = SKBitmap.Decode(bytes);
+        var result = new SKColor[colors.Width];
 
         for (int i = 0; i < colors.Width; i++)
         {

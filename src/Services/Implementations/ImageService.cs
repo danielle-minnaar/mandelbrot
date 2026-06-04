@@ -6,6 +6,7 @@ using Mandelbrot.src.Helpers.ColorKernels;
 using Mandelbrot.src.Helpers.ColorKernels.Implementations;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Services.Implementations;
 
@@ -127,11 +128,11 @@ public class ImageService(IPaletteService palettes, ICalculationService calculat
     ///     A tuple containing the image and timing information.
     ///     (<see cref="Bitmap"/>, <see cref="TimeSpan"/>)
     /// </returns>
-    private (Bitmap, TimeSpan) Looper(IColorKernel kernel)
+    private (SKBitmap, TimeSpan) Looper(IColorKernel kernel)
     {
         var startTime = DateTime.Now;
         var (xSize, ySize) = kernel.GetImageSize();
-        var image = new Bitmap(xSize, ySize);
+        var image = new SKBitmap(xSize, ySize);
         
         for (var x = 0; x < xSize; x++)
         for (var y = 0; y < ySize; y++)

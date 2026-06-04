@@ -1,5 +1,5 @@
-using System.Drawing;
 using Mandelbrot.src.Model;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Helpers.ColorKernels.Implementations;
 
@@ -45,5 +45,5 @@ public abstract class KernelBase(IterationData iterData, ColorPalette colorPalet
     }
     
     /// <inheritdoc/>
-    public abstract Color Apply(int x, int y);    
+    public abstract SKColor Apply(int x, int y);    
 }

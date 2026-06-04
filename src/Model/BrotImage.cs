@@ -1,4 +1,4 @@
-using System.Drawing;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Model;
 
@@ -10,7 +10,7 @@ public record BrotImage
     /// <summary>
     ///     Color image of the fractal.
     /// </summary>
-    public required Bitmap Image;
+    public required SKBitmap Image;
 
     /// <summary>
     ///     The time it took to convert from raw data to a color image.

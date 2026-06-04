@@ -1,4 +1,3 @@
-using System.Drawing;
 using Mandelbrot.src.Model;
 
 namespace Mandelbrot.src.Helpers.ColorKernels.Implementations.DoubleKernels;
@@ -96,7 +95,7 @@ public abstract class DoubleKernelBase : KernelBase
         var numberOfBins = _palette.Colors.Length - 1;
         var binSizes = new int[numberOfBins];
         var queryable = _escapeSpeeds.Cast<double>();
-        var count = queryable.Where(speed => speed != 0).Count();
+        var count = queryable.Count(speed => speed != 0);
         var standardBinSize = count / numberOfBins;
 
         for (int i = 0; i < numberOfBins; i++)

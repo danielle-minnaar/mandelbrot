@@ -1,5 +1,5 @@
-using System.Drawing;
 using Mandelbrot.src.Helpers.ColorKernels.Implementations;
+using SkiaSharp;
 
 namespace Mandelbrot.src.Helpers.ColorKernels;
 
@@ -28,7 +28,7 @@ public interface IColorKernel
     /// <returns>
     ///     The <c>Color</c> of this pixel.
     /// </returns>
-    Color Apply(int x, int y);
+    SKColor Apply(int x, int y);
 
     /// <summary>
     ///     Get the size of the image that this kernel is applied to.
