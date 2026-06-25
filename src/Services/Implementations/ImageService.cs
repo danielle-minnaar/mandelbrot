@@ -1,5 +1,3 @@
-using System.Drawing;
-using System.Net.Http.Headers;
 using Mandelbrot.src.Exceptions;
 using Mandelbrot.src.ExtensionMethods;
 using Mandelbrot.src.Helpers.ColorKernels;
@@ -126,7 +124,7 @@ public class ImageService(IPaletteService palettes, ICalculationService calculat
     /// </param>
     /// <returns>
     ///     A tuple containing the image and timing information.
-    ///     (<see cref="Bitmap"/>, <see cref="TimeSpan"/>)
+    ///     (<see cref="SKBitmap"/>, <see cref="TimeSpan"/>)
     /// </returns>
     private (SKBitmap, TimeSpan) Looper(IColorKernel kernel)
     {

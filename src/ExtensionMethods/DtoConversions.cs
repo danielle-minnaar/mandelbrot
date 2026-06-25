@@ -1,5 +1,3 @@
-using System.Drawing;
-using System.Runtime.CompilerServices;
 using Mandelbrot.src.Dtos;
 using Mandelbrot.src.Model;
 using Mandelbrot.src.Model.Parameters;
@@ -126,25 +124,4 @@ public static class DtoConversions
             YSize = dto.YResolution
         };
     }
-
-    /// <summary>
-    ///     Extension method to turn this <see cref="Bitmap"/>
-    ///     into an array of <c>byte</c>s that is safe to transfer
-    ///     as a dto along an endpoint.
-    /// </summary>
-    /// <param name="model">
-    ///     The <see cref="Bitmap"/> to be converted.
-    /// </param>
-    /// <returns>
-    ///     A new array of <c>byte</c>s.
-    /// </returns>
-    public static byte[] ToByteArray(this Bitmap model)
-    {
-        using (var ms = new MemoryStream())
-        {
-            model.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            return ms.ToArray();
-        }
-    }
-    
 }

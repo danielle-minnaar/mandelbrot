@@ -1,6 +1,6 @@
 ## Introduction
 
-This file is meant as a way to keep track of all tasks that could be executed as well as to make clear what tasks is currently the focus.
+This file is meant as a way to keep track of all tasks that could be executed as well as to make clear what tasks are currently the focus.
 
 ## Current Task
 
