@@ -12,6 +12,8 @@ services:
     build:
       context: .
       target: final
+    environment:
+      ASPNETCORE_URLS: http://+:8080
     ports:
       - 8080:8080
 

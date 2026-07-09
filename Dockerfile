@@ -45,8 +45,14 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
 
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
 # Copy everything needed to run the app from the "build" stage.
 COPY --from=build /app .
+
+# Ensure the non-privileged runtime user can read and write the app's storage data.
+RUN chown -R $APP_UID:$APP_GID /app
 
 # Switch to a non-privileged user (defined in the base image) that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/

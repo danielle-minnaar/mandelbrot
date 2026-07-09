@@ -1,4 +1,3 @@
-using System.Drawing;
 using Mandelbrot.src.Model;
 using SkiaSharp;
 
